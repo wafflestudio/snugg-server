@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 
-SECRET_KEY = str(os.getenv("DJANGO_SECRET_KEY"))
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 
 # Application definition
@@ -108,7 +108,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 DEBUG = os.environ.get("DEBUG")
 
-if DEBUG:
+if DEBUG is not None and DEBUG.lower() in ("true", "1", "t"):
     INSTALLED_APPS.append("debug_toolbar")
     MIDDLEWARE.append("debug_toolbar.middleware.DebugToolbarMiddleware")
     INTERNAL_IPS = ["127.0.0.1"]
