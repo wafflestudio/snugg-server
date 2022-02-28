@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "snugg.apps.univ",
     "snugg.apps.qna",
-    "mptt"
+    "mptt",
 ]
 
 MIDDLEWARE = [
