@@ -16,7 +16,9 @@ class CustomUserManager(BaseUserManager):
 
     def _create_user(self, username, email, password, **extra_fields):
         if not username:
-            raise ValueError('아이디를 설정해주세요.')
+            raise ValueError('이름을 설정해주세요.')
+        if not email:
+            raise ValueError('이메일을 설정해주세요.')
         email = self.normalize_email(email)
         user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
