@@ -1,15 +1,6 @@
 from django.db import models
-from django.dispatch import receiver
-from django.core.files import File
 
-from io import BytesIO
-
-# Create your models here.
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin, UserManager
-from django.utils import timezone
-
-from uuid import uuid4
-import os
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 
 class CustomUserManager(BaseUserManager):
     use_in_migrations = True
@@ -43,7 +34,7 @@ class User(AbstractBaseUser):
     objects = CustomUserManager()
 
     email = models.EmailField(max_length=255, unique=True)
-    username = models.CharField(null=False)
+    username = models.CharField(max_length=30, null=False)
     profile_image = models.ImageField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     birth_date = models.DateField(null=True)
