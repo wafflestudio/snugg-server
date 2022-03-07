@@ -2,8 +2,11 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.utils import IntegrityError
+from .serializers import UserCreateSerializer
 
 class UserSignUpViewSet(GenericViewSet):
+    serializer_class = UserCreateSerializer
+
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid()
