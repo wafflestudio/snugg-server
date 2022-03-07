@@ -1,15 +1,16 @@
+from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
+                                        PermissionsMixin)
 from django.db import models
 
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 
 class CustomUserManager(BaseUserManager):
     use_in_migrations = True
 
     def _create_user(self, username, email, password, **extra_fields):
         if not username:
-            raise ValueError('이름을 설정해주세요.')
+            raise ValueError("이름을 설정해주세요.")
         if not email:
-            raise ValueError('이메일을 설정해주세요.')
+            raise ValueError("이메일을 설정해주세요.")
         email = self.normalize_email(email)
         user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
@@ -21,11 +22,14 @@ class CustomUserManager(BaseUserManager):
 
     def create_superuser(self, username, email, password, **extra_fields):
 
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
 
-        if extra_fields.get('is_staff') is not True or extra_fields.get('is_superuser') is not True:
-            raise ValueError('권한 설정이 잘못되었습니다.')
+        if (
+            extra_fields.get("is_staff") is not True
+            or extra_fields.get("is_superuser") is not True
+        ):
+            raise ValueError("권한 설정이 잘못되었습니다.")
 
         return self._create_user(username, email, password, **extra_fields)
 
@@ -44,5 +48,5 @@ class User(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
 
-    EMAIL_FIELD = 'email'
-    USERNAME_FIELD = 'email'
+    EMAIL_FIELD = "email"
+    USERNAME_FIELD = "email"
