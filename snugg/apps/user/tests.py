@@ -31,7 +31,7 @@ class SignUpTests(TestCase):
         }
 
     def testSignUp(self):
-        response = self.client.post("/user/signup/", data=self.post_data)
+        response = self.client.post("/auth/signup/", data=self.post_data)
         new_user = User.objects.filter(email=self.post_data["email"])[0]
 
         self.assertEqual(new_user.email, self.post_data.get("email"))
