@@ -1,4 +1,5 @@
-from rest_framework_simplejwt.tokens import BlacklistMixin, RefreshToken, AccessToken
+from rest_framework_simplejwt.tokens import (AccessToken, BlacklistMixin,
+                                             RefreshToken)
 
 
 class RefreshToken(RefreshToken):

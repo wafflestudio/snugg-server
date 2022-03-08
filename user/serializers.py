@@ -1,15 +1,16 @@
+from datetime import datetime
+
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+
 from snugg.tokens import RefreshToken
+
 from .models import User
-from datetime import datetime
+
 
 def jwt_token_of(user):
     refresh = RefreshToken.for_user(user)
-    jwt_token = {
-        'refresh': str(refresh),
-        'access': str(refresh.access_token)
-    }
+    jwt_token = {"refresh": str(refresh), "access": str(refresh.access_token)}
     return jwt_token
 
 
@@ -25,14 +26,14 @@ class UserCreateSerializer(serializers.Serializer):
     is_admin = serializers.BooleanField(default=False)
 
     def validate(self, data):
-        email = data.get('email', None)
-        username = data.get('username', None)
-        password = data.get('password', None)
-        birth_date = data.get('birth_date', None)
-        data['birth_date'] = datetime.strptime(birth_date, '%Y-%m-%d')
+        email = data.get("email", None)
+        username = data.get("username", None)
+        password = data.get("password", None)
+        birth_date = data.get("birth_date", None)
+        data["birth_date"] = datetime.strptime(birth_date, "%Y-%m-%d")
 
         if User.objects.filter(email=email).exists():
-            raise ValidationError('이미 존재하는 이메일입니다.')
+            raise ValidationError("이미 존재하는 이메일입니다.")
 
         return data
 
