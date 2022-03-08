@@ -13,7 +13,7 @@ from .serializers import UserCreateSerializer, UserSignInSerializer
 
 
 class UserAccountViewSet(GenericViewSet):
-    permission_classes = (permissions.AllowAny, )
+    permission_classes = (permissions.AllowAny,)
     serializer_class = UserCreateSerializer
 
     @action(detail=False, methods=["POST"])
@@ -39,7 +39,11 @@ class UserAccountViewSet(GenericViewSet):
 
         return Response({"success": True, "token": token}, status=status.HTTP_200_OK)
 
-    @action(detail=False, methods=["POST"], permission_classes=(permissions.IsAuthenticated, ))
+    @action(
+        detail=False,
+        methods=["POST"],
+        permission_classes=(permissions.IsAuthenticated,),
+    )
     def signout(self, request):
         refresh_token = RefreshToken(request.data.get("refresh"))
         access_token = AccessToken(request.META.get("HTTP_AUTHORIZATION").split()[1])
@@ -47,7 +51,11 @@ class UserAccountViewSet(GenericViewSet):
         access_token.blacklist()
         return Response({"success": True})
 
-    @action(detail=False, methods=["POST"], permission_classes=(permissions.IsAuthenticated, ))
+    @action(
+        detail=False,
+        methods=["POST"],
+        permission_classes=(permissions.IsAuthenticated,),
+    )
     def deactivate(self, request):
         user = authenticate(
             email=request.user.email, password=request.data.get("password")
