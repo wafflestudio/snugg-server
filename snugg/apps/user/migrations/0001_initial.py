@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 
-import user.models
+import snugg.apps.user.models
 
 
 class Migration(migrations.Migration):
@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
                 "abstract": False,
             },
             managers=[
-                ("objects", user.models.CustomUserManager()),
+                ("objects", snugg.apps.user.models.CustomUserManager()),
             ],
         ),
     ]

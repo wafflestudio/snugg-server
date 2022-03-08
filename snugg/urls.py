@@ -17,7 +17,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 
-urlpatterns = [path("admin/", admin.site.urls), path("user/", include("user.urls"))]
+urlpatterns = [path("admin/", admin.site.urls), path("user/", include("snugg.apps.user.urls"))]
 
 if settings.DEBUG:
     import debug_toolbar
