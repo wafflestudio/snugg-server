@@ -12,22 +12,8 @@ from snugg.tokens import AccessToken, RefreshToken
 from .serializers import UserCreateSerializer, UserSignInSerializer
 
 
-class UserAccountViewSet(ViewSetActionPermissionMixin, GenericViewSet):
-    permission_classes = permissions.AllowAny
-    permission_action_classes = {
-        "signup": [
-            permissions.AllowAny,
-        ],
-        "signin": [
-            permissions.AllowAny,
-        ],
-        "signout": [
-            permissions.IsAuthenticated,
-        ],
-        "delete": [
-            permissions.IsAuthenticated,
-        ],
-    }
+class UserAccountViewSet(GenericViewSet):
+    permission_classes = (permissions.AllowAny, )
     serializer_class = UserCreateSerializer
 
     @action(detail=False, methods=["POST"])
@@ -53,7 +39,7 @@ class UserAccountViewSet(ViewSetActionPermissionMixin, GenericViewSet):
 
         return Response({"success": True, "token": token}, status=status.HTTP_200_OK)
 
-    @action(detail=False, methods=["POST"])
+    @action(detail=False, methods=["POST"], permission_classes=(permissions.IsAuthenticated, ))
     def signout(self, request):
         refresh_token = RefreshToken(request.data.get("refresh"))
         access_token = AccessToken(request.META.get("HTTP_AUTHORIZATION").split()[1])
@@ -61,13 +47,14 @@ class UserAccountViewSet(ViewSetActionPermissionMixin, GenericViewSet):
         access_token.blacklist()
         return Response({"success": True})
 
-    @action(detail=False, methods=["POST"])
-    def delete(self, request):
-        self.signout(request)
+    @action(detail=False, methods=["POST"], permission_classes=(permissions.IsAuthenticated, ))
+    def deactivate(self, request):
         user = authenticate(
             email=request.user.email, password=request.data.get("password")
         )
         if user is not request.user:
             raise AuthenticationFailed("아이디 또는 비밀번호를 확인하세요.")
-        user.delete()
-        return Response({"susccess": True})
+        self.signout(request)
+        user.is_active = False
+        user.save()
+        return Response({"success": True})
