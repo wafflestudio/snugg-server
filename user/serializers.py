@@ -1,7 +1,8 @@
 from datetime import datetime
+
 from django.contrib.auth import authenticate
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError, AuthenticationFailed
+from rest_framework.exceptions import AuthenticationFailed, ValidationError
 
 from snugg.tokens import RefreshToken
 
@@ -48,17 +49,14 @@ class UserSignInSerializer(serializers.Serializer):
     token = serializers.CharField(max_length=255, read_only=True)
 
     def validate(self, data):
-        email = data.get('email', None)
-        password = data.get('password', None)
+        email = data.get("email", None)
+        password = data.get("password", None)
         user = authenticate(email=email, password=password)
 
         if user is None:
-            raise AuthenticationFailed('아이디 또는 비밀번호를 확인하세요.')
+            raise AuthenticationFailed("아이디 또는 비밀번호를 확인하세요.")
 
-        return {
-            'email': user.email,
-            'token': jwt_token_of(user)
-        }
+        return {"email": user.email, "token": jwt_token_of(user)}
 
     def create(self, data):
         return data

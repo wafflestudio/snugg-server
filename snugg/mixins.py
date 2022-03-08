@@ -32,15 +32,11 @@ class ViewSetActionPermissionMixin:
             if self.action:
                 action_func = getattr(self, self.action, {})
                 action_func_kwargs = getattr(action_func, "kwargs", {})
-                permission_classes = action_func_kwargs.get(
-                    "permission_classes"
-                )
+                permission_classes = action_func_kwargs.get("permission_classes")
             else:
                 permission_classes = None
 
             return [
                 permission()
-                for permission in (
-                    permission_classes or self.permission_classes
-                )
+                for permission in (permission_classes or self.permission_classes)
             ]
