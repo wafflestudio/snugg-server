@@ -5,7 +5,7 @@ import factory
 from .models import User
 from rest_framework import status
 
-# Create your tests here.
+
 class UserFactory(DjangoModelFactory):
     class Meta:
         model = User
@@ -29,6 +29,10 @@ class SignUpTests(TestCase):
         }
 
     def testSignUp(self):
-        with transaction.atomic():
-            response = self.client.post('/user/signup/', data=self.post_data)
+        response = self.client.post('/user/signup/', data=self.post_data)
+        new_user = User.objects.filter(email=self.post_data['email'])[0]
+
+        self.assertEqual(new_user.email, self.post_data.get('email'))
+        self.assertEqual(new_user.username, self.post_data.get('username'))
+        self.assertEqual(new_user.birth_date.strftime('%Y-%m-%d'), self.post_data.get('birth_date'))
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
