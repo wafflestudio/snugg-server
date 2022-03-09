@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class UserConfig(AppConfig):
+class QnaConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "snugg.apps.user"
+    name = "snugg.apps.qna"

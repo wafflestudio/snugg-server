@@ -27,6 +27,8 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 # Application definition
 
 INSTALLED_APPS = [
+    "rest_framework",
+    "rest_framework_simplejwt",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -34,6 +36,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "snugg.apps.user",
+    "snugg.apps.univ",
+    "snugg.apps.qna",
+    "mptt",
 ]
 
 MIDDLEWARE = [

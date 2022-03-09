@@ -57,3 +57,8 @@ python3 manage.py runserver
 ```
 snugg-server/snugg/apps/
 ```
+
+## Git hooks
+```
+pre-commit install
+```
