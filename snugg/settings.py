@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "snugg.apps.univ",
     "snugg.apps.qna",
     "mptt",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
