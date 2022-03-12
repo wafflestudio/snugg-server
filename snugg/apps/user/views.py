@@ -1,5 +1,4 @@
 from django.contrib.auth import authenticate
-from django.db.utils import IntegrityError
 from rest_framework import permissions, status
 from rest_framework.decorators import action
 from rest_framework.exceptions import AuthenticationFailed
@@ -18,24 +17,21 @@ class UserAccountViewSet(GenericViewSet):
     def signup(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
-        try:
-            user, jwt_token = serializer.save()
-        except IntegrityError:
-            # 추후 커스텀 에러로 변경 예정
-            raise IntegrityError()
+        user_data, jwt_token = serializer.save()
 
         return Response(
-            {"user": user.username, "token": jwt_token}, status=status.HTTP_201_CREATED
+            {"user": user_data, "token": jwt_token}, status=status.HTTP_201_CREATED
         )
 
     @action(detail=False, methods=["POST"])
     def signin(self, request):
         serializer = UserSignInSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        token = serializer.save()
+        user_data, jwt_token = serializer.save()
 
-        return Response({"success": True, "token": token}, status=status.HTTP_200_OK)
+        return Response(
+            {"user": user_data, "token": jwt_token}, status=status.HTTP_200_OK
+        )
 
     @action(
         detail=False,

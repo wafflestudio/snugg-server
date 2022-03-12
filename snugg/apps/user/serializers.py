@@ -22,12 +22,13 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = super().create(validated_data)
+        user_data = UserSerializer(user).data
 
-        return user, jwt_token_of(user)
+        return user_data, jwt_token_of(user)
 
 
 class UserSignInSerializer(serializers.Serializer):
-    email = serializers.EmailField(required=True)
+    email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
@@ -38,7 +39,16 @@ class UserSignInSerializer(serializers.Serializer):
         if user is None:
             raise AuthenticationFailed("이메일 또는 비밀번호를 확인하세요.")
 
-        return {"email": user.email, "token": jwt_token_of(user)}
+        return {"user": user}
 
-    def create(self, data):
-        return data
+    def create(self, validated_data):
+        user = validated_data.get("user")
+        user_data = UserSerializer(user).data
+
+        return user_data, jwt_token_of(user)
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("pk", "email", "username", "birth_date")
