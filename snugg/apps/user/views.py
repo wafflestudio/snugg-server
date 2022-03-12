@@ -9,9 +9,12 @@ from .serializers import SigninService, SignoutService, SignupService
 
 
 class UserAccountViewSet(GenericViewSet):
-    permission_classes = (permissions.AllowAny,)
-
-    @action(detail=False, methods=["POST"], serializer_class=SignupService)
+    @action(
+        detail=False,
+        methods=["POST"],
+        permission_classes=(permissions.AllowAny,),
+        serializer_class=SignupService,
+    )
     def signup(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -21,7 +24,12 @@ class UserAccountViewSet(GenericViewSet):
             {"user": user_data, "token": jwt_token}, status=status.HTTP_201_CREATED
         )
 
-    @action(detail=False, methods=["POST"], serializer_class=SigninService)
+    @action(
+        detail=False,
+        methods=["POST"],
+        permission_classes=(permissions.AllowAny,),
+        serializer_class=SigninService,
+    )
     def signin(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -34,7 +42,6 @@ class UserAccountViewSet(GenericViewSet):
     @action(
         detail=False,
         methods=["POST"],
-        permission_classes=(permissions.IsAuthenticated,),
         serializer_class=SignoutService,
     )
     def signout(self, request):
@@ -47,7 +54,6 @@ class UserAccountViewSet(GenericViewSet):
     @action(
         detail=False,
         methods=["POST"],
-        permission_classes=(permissions.IsAuthenticated,),
     )
     def deactivate(self, request):
         user = authenticate(
