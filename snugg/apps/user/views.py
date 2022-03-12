@@ -5,8 +5,6 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-
-from snugg.mixins import ViewSetActionPermissionMixin
 from snugg.tokens import AccessToken, RefreshToken
 
 from .serializers import UserCreateSerializer, UserSignInSerializer

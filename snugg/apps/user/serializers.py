@@ -1,9 +1,6 @@
-from datetime import datetime
-
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed, ValidationError
-
 from snugg.tokens import RefreshToken
 
 from .models import User
