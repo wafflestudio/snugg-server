@@ -38,11 +38,12 @@ class SigninService(serializers.Serializer):
 
         if user is None:
             raise AuthenticationFailed("이메일 또는 비밀번호를 확인하세요.")
+        self.context["user"] = user
 
-        return {"user": user}
+        return data
 
     def execute(self):
-        user = self.validated_data.get("user")
+        user = self.context.get("user")
         user_data = UserSerializer(user).data
 
         return user_data, jwt_token_of(user)
