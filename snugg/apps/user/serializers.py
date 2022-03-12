@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
-from rest_framework.exceptions import AuthenticationFailed, ValidationError
+from rest_framework.exceptions import AuthenticationFailed
 from snugg.tokens import RefreshToken
 
 from .models import User
@@ -20,23 +20,15 @@ class UserCreateSerializer(serializers.ModelSerializer):
             "password": {"write_only": True},
         }
 
-    def validate(self, data):
-        email = data.get("email", None)
-
-        if User.objects.filter(email=email).exists():
-            raise ValidationError("이미 존재하는 이메일입니다.")
-
-        return data
-
     def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
+        user = super().create(validated_data)
+
         return user, jwt_token_of(user)
 
 
 class UserSignInSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True)
-    token = serializers.CharField(max_length=255, read_only=True)
 
     def validate(self, data):
         email = data.get("email", None)
@@ -44,7 +36,7 @@ class UserSignInSerializer(serializers.Serializer):
         user = authenticate(email=email, password=password)
 
         if user is None:
-            raise AuthenticationFailed("아이디 또는 비밀번호를 확인하세요.")
+            raise AuthenticationFailed("이메일 또는 비밀번호를 확인하세요.")
 
         return {"email": user.email, "token": jwt_token_of(user)}
 
