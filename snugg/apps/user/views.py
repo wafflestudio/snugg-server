@@ -6,7 +6,7 @@ from rest_framework.viewsets import GenericViewSet
 from .serializers import SigninService, SignoutService, SignupService
 
 
-class UserAccountViewSet(GenericViewSet):
+class AuthViewSet(GenericViewSet):
     @action(
         detail=False,
         methods=["POST"],
