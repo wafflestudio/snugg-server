@@ -3,15 +3,9 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.exceptions import TokenError
-from snugg.tokens import AccessToken, RefreshToken
+from snugg.tokens import AccessToken, RefreshToken, jwt_token_of
 
 from .models import User
-
-
-def jwt_token_of(user):
-    refresh = RefreshToken.for_user(user)
-    jwt_token = {"refresh": str(refresh), "access": str(refresh.access_token)}
-    return jwt_token
 
 
 class SignupService(serializers.ModelSerializer):
