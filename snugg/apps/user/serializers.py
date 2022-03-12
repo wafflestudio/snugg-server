@@ -12,13 +12,11 @@ def jwt_token_of(user):
     return jwt_token
 
 
-class UserCreateSerializer(serializers.ModelSerializer):
+class SignupService(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("email", "username", "password", "birth_date")
-        extra_kwargs = {
-            "password": {"write_only": True},
-        }
+        extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
         user = super().create(validated_data)
@@ -27,7 +25,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         return user_data, jwt_token_of(user)
 
 
-class UserSignInSerializer(serializers.Serializer):
+class SigninService(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
@@ -41,8 +39,8 @@ class UserSignInSerializer(serializers.Serializer):
 
         return {"user": user}
 
-    def create(self, validated_data):
-        user = validated_data.get("user")
+    def execute(self, **kwargs):
+        user = self.validated_data.get("user")
         user_data = UserSerializer(user).data
 
         return user_data, jwt_token_of(user)

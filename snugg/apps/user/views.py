@@ -6,12 +6,12 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from snugg.tokens import AccessToken, RefreshToken
 
-from .serializers import UserCreateSerializer, UserSignInSerializer
+from .serializers import SigninService, SignupService
 
 
 class UserAccountViewSet(GenericViewSet):
     permission_classes = (permissions.AllowAny,)
-    serializer_class = UserCreateSerializer
+    serializer_class = SignupService
 
     @action(detail=False, methods=["POST"])
     def signup(self, request):
@@ -25,9 +25,9 @@ class UserAccountViewSet(GenericViewSet):
 
     @action(detail=False, methods=["POST"])
     def signin(self, request):
-        serializer = UserSignInSerializer(data=request.data)
+        serializer = SigninService(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user_data, jwt_token = serializer.save()
+        user_data, jwt_token = serializer.execute()
 
         return Response(
             {"user": user_data, "token": jwt_token}, status=status.HTTP_200_OK
