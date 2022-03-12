@@ -1,7 +1,5 @@
-from django.contrib.auth import authenticate
 from rest_framework import permissions, status
 from rest_framework.decorators import action
-from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
@@ -35,9 +33,7 @@ class UserAccountViewSet(GenericViewSet):
         serializer.is_valid(raise_exception=True)
         user_data, jwt_token = serializer.execute()
 
-        return Response(
-            {"user": user_data, "token": jwt_token}, status=status.HTTP_200_OK
-        )
+        return Response({"user": user_data, "token": jwt_token})
 
     @action(
         detail=False,
