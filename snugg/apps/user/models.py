@@ -10,6 +10,8 @@ class CustomUserManager(BaseUserManager):
             raise ValueError("이름을 설정해주세요.")
         if not email:
             raise ValueError("이메일을 설정해주세요.")
+
+        extra_fields["is_active"] = True
         email = self.normalize_email(email)
         user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
@@ -17,18 +19,16 @@ class CustomUserManager(BaseUserManager):
         return user
 
     def create_user(self, username, email, password, **extra_fields):
+        extra_fields["is_staff"] = False
+        extra_fields["is_superuser"] = False
+        extra_fields["is_admin"] = False
+
         return self._create_user(username, email, password, **extra_fields)
 
     def create_superuser(self, username, email, password, **extra_fields):
-
-        extra_fields.setdefault("is_staff", True)
-        extra_fields.setdefault("is_superuser", True)
-
-        if (
-            extra_fields.get("is_staff") is not True
-            or extra_fields.get("is_superuser") is not True
-        ):
-            raise ValueError("권한 설정이 잘못되었습니다.")
+        extra_fields["is_staff"] = True
+        extra_fields["is_superuser"] = True
+        extra_fields["is_admin"] = True
 
         return self._create_user(username, email, password, **extra_fields)
 

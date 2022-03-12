@@ -15,19 +15,13 @@ def jwt_token_of(user):
 class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = "__all__"
+        fields = ("email", "username", "password", "birth_date")
         extra_kwargs = {
-            "email": {"required": True},
-            "username": {"required": True},
-            "password": {"required": True, "write_only": True},
-            "birth_date": {"required": True},
+            "password": {"write_only": True},
         }
 
     def validate(self, data):
         email = data.get("email", None)
-        username = data.get("username", None)
-        password = data.get("password", None)
-        birth_date = data.get("birth_date", None)
 
         if User.objects.filter(email=email).exists():
             raise ValidationError("이미 존재하는 이메일입니다.")
@@ -40,7 +34,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
 
 class UserSignInSerializer(serializers.Serializer):
-    email = serializers.CharField(required=True)
+    email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True)
     token = serializers.CharField(max_length=255, read_only=True)
 
