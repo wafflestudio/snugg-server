@@ -4,16 +4,14 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-from snugg.tokens import AccessToken, RefreshToken
 
-from .serializers import SigninService, SignupService
+from .serializers import SigninService, SignoutService, SignupService
 
 
 class UserAccountViewSet(GenericViewSet):
     permission_classes = (permissions.AllowAny,)
-    serializer_class = SignupService
 
-    @action(detail=False, methods=["POST"])
+    @action(detail=False, methods=["POST"], serializer_class=SignupService)
     def signup(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -23,9 +21,9 @@ class UserAccountViewSet(GenericViewSet):
             {"user": user_data, "token": jwt_token}, status=status.HTTP_201_CREATED
         )
 
-    @action(detail=False, methods=["POST"])
+    @action(detail=False, methods=["POST"], serializer_class=SigninService)
     def signin(self, request):
-        serializer = SigninService(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user_data, jwt_token = serializer.execute()
 
@@ -37,13 +35,14 @@ class UserAccountViewSet(GenericViewSet):
         detail=False,
         methods=["POST"],
         permission_classes=(permissions.IsAuthenticated,),
+        serializer_class=SignoutService,
     )
     def signout(self, request):
-        refresh_token = RefreshToken(request.data.get("refresh"))
-        access_token = AccessToken(request.META.get("HTTP_AUTHORIZATION").split()[1])
-        refresh_token.blacklist()
-        access_token.blacklist()
-        return Response({"success": True})
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        success = serializer.execute()
+
+        return Response({"success": bool(success)})
 
     @action(
         detail=False,

@@ -1,7 +1,9 @@
 from django.contrib.auth import authenticate
+from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
-from snugg.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
+from snugg.tokens import AccessToken, RefreshToken
 
 from .models import User
 
@@ -39,11 +41,34 @@ class SigninService(serializers.Serializer):
 
         return {"user": user}
 
-    def execute(self, **kwargs):
+    def execute(self):
         user = self.validated_data.get("user")
         user_data = UserSerializer(user).data
 
         return user_data, jwt_token_of(user)
+
+
+class SignoutService(serializers.Serializer):
+    refresh_token = serializers.CharField()
+
+    def validate_refresh_token(self, value):
+        try:
+            RefreshToken(value)
+        except TokenError:
+            raise serializers.ValidationError("유효하지 않은 토큰입니다.")
+
+        return value
+
+    @transaction.atomic
+    def execute(self):
+        refresh_token = RefreshToken(self.validated_data.get("refresh_token"))
+        refresh_token.blacklist()
+
+        request = self.context.get("request")
+        access_token = AccessToken(request.META.get("HTTP_AUTHORIZATION").split()[1])
+        access_token.blacklist()
+
+        return True
 
 
 class UserSerializer(serializers.ModelSerializer):
