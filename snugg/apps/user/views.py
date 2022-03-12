@@ -51,17 +51,18 @@ class UserAccountViewSet(GenericViewSet):
 
         return Response({"success": bool(success)})
 
-    @action(
-        detail=False,
-        methods=["POST"],
-    )
-    def deactivate(self, request):
-        user = authenticate(
-            email=request.user.email, password=request.data.get("password")
-        )
-        if user is not request.user:
-            raise AuthenticationFailed("아이디 또는 비밀번호를 확인하세요.")
-        self.signout(request)
-        user.is_active = False
-        user.save()
-        return Response({"success": True})
+    # TODO: Implement "deactivate" along with PUT /users/{pk}
+    # @action(
+    #     detail=False,
+    #     methods=["POST"],
+    # )
+    # def deactivate(self, request):
+    #     user = authenticate(
+    #         email=request.user.email, password=request.data.get("password")
+    #     )
+    #     if user is not request.user:
+    #         raise AuthenticationFailed("아이디 또는 비밀번호를 확인하세요.")
+    #     self.signout(request)
+    #     user.is_active = False
+    #     user.save()
+    #     return Response({"success": True})
