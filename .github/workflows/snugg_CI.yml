@@ -16,7 +16,6 @@ jobs:
         env:
           TZ: Asia/Seoul
           POSTGRES_PASSWORD: ${{ secrets.POSTGRESQL_PASSWORD }}
-          POSTGRES_USER: ${{ secrets.POSTGRESQL_USER }}
           POSTGRES_DB: github-action
           POSTGRES_INITDB_ARGS: '--encoding=UTF-8'
         ports:
