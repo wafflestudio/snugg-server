@@ -1,0 +1,44 @@
+name: Django CI
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    services:
+      psql:
+        image: postgres:12
+        environment:
+          TZ: Asia/Seoul
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRESQL_PASSWORD }}
+          POSTGRES_USER: ${{ secrets.POSTGRESQL_USER }}
+          POSTGRES_DB: github-action
+        healthcheck:
+          test: [ "CMD", "pg_isready", "-U", "${{ secrets.POSTGRESQL_USER }}" ]
+        ports:
+          - 5432:5432
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8.3
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8.3
+
+    - name: create dotenv
+      run: |
+        echo "${{ secrets.DOTENV }}" > ./.env
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run Tests
+      run: |
+        python manage.py migrate
+        python manage.py test

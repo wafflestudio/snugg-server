@@ -150,6 +150,10 @@ DATABASES = {
         "PASSWORD": os.getenv("POSTGRESQL_PASSWORD"),
         "HOST": os.getenv("POSTGRESQL_HOST"),
         "PORT": os.getenv("POSTGRESQL_PORT"),
+        "TEST": {
+            "NAME": "github-action",
+            "HOST": "127.0.0.1",
+        },
     }
 }
 
