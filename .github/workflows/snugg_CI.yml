@@ -18,6 +18,7 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRESQL_PASSWORD }}
           POSTGRES_USER: ${{ secrets.POSTGRESQL_USER }}
           POSTGRES_DB: github-action
+          POSTGRES_INITDB_ARGS: '--encoding=UTF-8'
         healthcheck:
           test: [ "CMD", "pg_isready", "-U", "${{ secrets.POSTGRESQL_USER }}" ]
         ports:
