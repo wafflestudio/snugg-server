@@ -19,10 +19,10 @@ jobs:
           POSTGRES_USER: ${{ secrets.POSTGRESQL_USER }}
           POSTGRES_DB: github-action
           POSTGRES_INITDB_ARGS: '--encoding=UTF-8'
-        healthcheck:
-          test: [ "CMD", "pg_isready", "-U", "${{ secrets.POSTGRESQL_USER }}" ]
         ports:
           - 5432:5432
+        options: --health-cmd="pg_isready -U ${{ secrets.POSTGRESQL_USER }}" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.8.3
