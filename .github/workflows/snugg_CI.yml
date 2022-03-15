@@ -31,7 +31,8 @@ jobs:
 
     - name: create dotenv
       run: |
-        echo "${{ secrets.DOTENV }}" > ./.env
+        echo "${{ secrets.DJANGO_SECRET_KEY }}" > ./.env
+        echo "${{ secrets.DOTENV }}" >> ./.env
 
     - name: Install Dependencies
       run: |
