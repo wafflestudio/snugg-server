@@ -16,11 +16,11 @@ jobs:
         env:
           TZ: Asia/Seoul
           POSTGRES_PASSWORD: ${{ secrets.POSTGRESQL_PASSWORD }}
+          POSTGRES_USER: ${{ secrets.POSTGRESQL_USER }}
           POSTGRES_DB: github-action
           POSTGRES_INITDB_ARGS: '--encoding=UTF-8'
         ports:
           - 5432:5432
-        options: --health-cmd="pg_isready -U ${ secrets.POSTGRESQL_USER }" --health-interval=30s --health-timeout=30s --health-retries=3
 
     steps:
     - uses: actions/checkout@v2
