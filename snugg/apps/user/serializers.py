@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import update_last_login
 from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
@@ -38,6 +39,7 @@ class SigninService(serializers.Serializer):
 
     def execute(self):
         user = self.context.get("user")
+        update_last_login(None, user)
         user_data = UserSerializer(user).data
 
         return user_data, jwt_token_of(user)
