@@ -11,20 +11,15 @@ class UserFactory(DjangoModelFactory):
     class Meta:
         model = User
 
-    # username = factory.Sequence(lambda n: f"user{n}")
-    # email = factory.Sequence(lambda n: f"user{n}@gmail.com")
-    username = factory.Faker("user_name")
-    email = factory.Faker("email")
-    password = factory.Faker("password")
+    username = factory.Sequence(lambda n: f"user{n}")
+    email = factory.Sequence(lambda n: f"user{n}@gmail.com")
+    # username = factory.Faker("user_name")
+    # email = factory.Faker("email")
+    password = factory.PostGenerationMethodCall(
+        "set_password", factory.Faker("password")
+    )
     birth_date = factory.Faker("date")
     is_active = True
-
-    @classmethod
-    def create(cls, **kwargs):
-        user = super().create(**kwargs)
-        user.set_password(user.password)
-
-        return user 
 
 
 class SignUpTests(TestCase):
@@ -101,7 +96,6 @@ class SigninTest(TestCase):
     def test_signin(self):
         response = self.client.post("/auth/signin/", data=self.user_data)
 
-        # TODO: (fix) expected HTTP_200 but returns HTTP_401
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_signin_email_wrong(self):
