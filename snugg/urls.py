@@ -16,9 +16,23 @@ Including another URLconf
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
+from drf_spectacular.views import (
+    SpectacularJSONAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("doc/", SpectacularJSONAPIView.as_view(), name="schema-json"),
+    path(
+        "doc/swagger",
+        SpectacularSwaggerView.as_view(url_name="schema-json"),
+        name="swagger-ui",
+    ),
+    path(
+        "doc/redoc", SpectacularRedocView.as_view(url_name="schema-json"), name="redoc"
+    ),
     path("", include("snugg.apps.user.urls")),
 ]
 
