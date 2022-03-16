@@ -15,9 +15,7 @@ class UserFactory(DjangoModelFactory):
     email = factory.Sequence(lambda n: f"user{n}@gmail.com")
     # username = factory.Faker("user_name")
     # email = factory.Faker("email")
-    password = factory.PostGenerationMethodCall(
-        "set_password", factory.Faker("password")
-    )
+    password = factory.PostGenerationMethodCall("set_password", fake.password())
     birth_date = factory.Faker("date")
     is_active = True
 
