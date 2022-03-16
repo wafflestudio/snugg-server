@@ -3,9 +3,11 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+from .schemas import auth_viewset_schema
 from .serializers import SigninService, SignoutService, SignupService
 
 
+@auth_viewset_schema
 class AuthViewSet(GenericViewSet):
     @action(
         detail=False,
