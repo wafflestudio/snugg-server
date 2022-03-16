@@ -4,6 +4,7 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.exceptions import TokenError
+
 from snugg.tokens import AccessToken, RefreshToken, jwt_token_of
 
 from .models import User
@@ -71,4 +72,4 @@ class SignoutService(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("pk", "email", "username", "birth_date")
+        fields = ("pk", "email", "username", "birth_date", "created_at", "last_login")
