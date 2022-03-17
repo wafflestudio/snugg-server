@@ -7,3 +7,9 @@ class RefreshToken(RefreshToken):
 
 class AccessToken(BlacklistMixin, AccessToken):
     pass
+
+
+def jwt_token_of(user):
+    refresh = RefreshToken.for_user(user)
+    jwt_token = {"refresh": str(refresh), "access": str(refresh.access_token)}
+    return jwt_token
