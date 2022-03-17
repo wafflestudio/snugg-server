@@ -39,18 +39,18 @@ def create_presigned_url(
     return response
 
 
-def create_presigned_get(object_key, expiration=3600):
+def create_presigned_get(key, expiration=3600):
     return create_presigned_url(
         "get_object",
-        method_parameters={"Bucket": AWS_STORAGE_BUCKET_NAME, "Key": object_key},
+        method_parameters={"Bucket": AWS_STORAGE_BUCKET_NAME, "Key": key},
         expiration=expiration,
     )
 
 
-def create_presigned_post(object_name, fields=None, conditions=None, expiration=3600):
+def create_presigned_post(key, fields=None, conditions=None, expiration=3600):
     """Generate a presigned URL S3 POST request to upload a file
 
-    :param object_name: string
+    :param key: string
     :param fields: Dictionary of prefilled form fields
     :param conditions: List of conditions to include in the policy
     :param expiration: Time in seconds for the presigned URL to remain valid
@@ -65,7 +65,7 @@ def create_presigned_post(object_name, fields=None, conditions=None, expiration=
     try:
         response = s3_client.generate_presigned_post(
             AWS_STORAGE_BUCKET_NAME,
-            object_name,
+            key,
             Fields=fields,
             Conditions=conditions,
             ExpiresIn=expiration,
