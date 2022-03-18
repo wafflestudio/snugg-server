@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "mptt",
     "storages",
     "django_extensions",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -61,6 +62,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 ROOT_URLCONF = "snugg.urls"
@@ -189,3 +191,23 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = "user.User"
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "SNUGG API",
+    "DESCRIPTION": "Waffle Studio - SNUGG OpenAPI 3.0 Document",
+    "VERSION": "0.1.0",
+    "CONTACT": {
+        "name": "SNUGG SERVER",
+        "url": "https://github.com/wafflestudio/snugg-server",
+    },
+    "SWAGGER_UI_SETTINGS": {
+        "dom_id": "#swagger-ui",
+        "layout": "BaseLayout",
+        "deepLinking": True,
+        "persistAuthorization": True,
+        "displayOperationId": True,
+        "filter": True,
+    },
+    "COMPONENT_NO_READ_ONLY_REQUIRED": True,
+    "COMPONENT_SPLIT_REQUEST": False,
+}
