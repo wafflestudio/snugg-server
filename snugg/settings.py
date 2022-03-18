@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "snugg.apps.univ",
     "snugg.apps.qna",
     "mptt",
+    "storages",
     "django_extensions",
     "drf_spectacular",
 ]
@@ -115,11 +116,26 @@ USE_I18N = True
 
 USE_TZ = True
 
+# AWS setting
+
+AWS_REGION = os.getenv("AWS_REGION")
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+AWS_QUERYSTRING_AUTH = bool(os.getenv("AWS_QUERYSTRING_AUTH"))
+AWS_S3_HOST = os.getenv("AWS_S3_HOST")
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_S3_CUSTOM_DOMAIN = os.getenv("AWS_S3_CUSTOM_DOMAIN")
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+# Media files
+
+MEDIA_URL = os.getenv("MEDIA_URL")
+DEFAULT_FILE_STORAGE = os.getenv("DEFAULT_FILE_STORAGE")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
