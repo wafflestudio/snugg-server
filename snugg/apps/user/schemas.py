@@ -1,6 +1,7 @@
 from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_view
 from rest_framework import serializers
 
+from .examples import TestUser
 from .serializers import UserSerializer
 
 
@@ -24,7 +25,9 @@ auth_viewset_schema = extend_schema_view(
         summary="Signup",
         description="Create new user.",
         responses={
-            201: OpenApiResponse(response=UserToken),
+            201: OpenApiResponse(
+                response=UserToken, examples=[TestUser.signup_example]
+            ),
             400: OpenApiResponse(description="Invalid or insufficient data."),
         },
     ),
@@ -32,7 +35,9 @@ auth_viewset_schema = extend_schema_view(
         summary="Signin",
         description="Get refresh token and access token.",
         responses={
-            200: OpenApiResponse(response=UserToken),
+            200: OpenApiResponse(
+                response=UserToken, examples=[TestUser.signin_example]
+            ),
             400: OpenApiResponse(description="Incorrect or insufficient data."),
         },
     ),
