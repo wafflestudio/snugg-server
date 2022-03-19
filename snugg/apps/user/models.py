@@ -1,4 +1,8 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
 from django.db import models
 
 
@@ -21,19 +25,17 @@ class CustomUserManager(BaseUserManager):
     def create_user(self, username, email, password, **extra_fields):
         extra_fields["is_staff"] = False
         extra_fields["is_superuser"] = False
-        extra_fields["is_admin"] = False
 
         return self._create_user(username, email, password, **extra_fields)
 
     def create_superuser(self, username, email, password, **extra_fields):
         extra_fields["is_staff"] = True
         extra_fields["is_superuser"] = True
-        extra_fields["is_admin"] = True
 
         return self._create_user(username, email, password, **extra_fields)
 
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
     REQUIRED_FIELDS = ["username"]
 
@@ -44,15 +46,13 @@ class User(AbstractBaseUser):
     birth_date = models.DateField(null=True)
 
     is_staff = models.BooleanField(default=False)
-    is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
 
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "email"
 
-    def has_perm(self, perm, obj=None):
-        return self.is_admin
+    # def has_perm(self, perm, obj=None):
+    #     return self.is_admin
 
-    def has_module_perms(self, app_label):
-        return self.is_admin
+    # def has_module_perms(self, app_label):
+    #     return self.is_admin
