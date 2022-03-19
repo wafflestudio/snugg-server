@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "storages",
     "django_extensions",
     "drf_spectacular",
+    "taggit",
 ]
 
 MIDDLEWARE = [
@@ -182,6 +183,7 @@ DATABASES = {
 }
 
 # JWT Token Settings
+
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": datetime.timedelta(days=1),
@@ -197,6 +199,8 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = "user.User"
+
+# drf-spectacular settings
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "SNUGG API",
@@ -218,3 +222,7 @@ SPECTACULAR_SETTINGS = {
     "COMPONENT_SPLIT_REQUEST": True,
     "COMPONENT_SPLIT_PATCH": False,
 }
+
+# taggit settings
+
+TAGGIT_CASE_INSENSITIVE = True
