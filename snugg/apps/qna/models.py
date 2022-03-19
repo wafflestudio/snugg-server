@@ -49,6 +49,19 @@ class Post(models.Model):
     )
     comments = GenericRelation("Comment", related_query_name="post")
 
+    def save(self, *args, **kwargs):
+        """
+        If this Post object is not created yet,
+        or the accepted answer's 'post' field does not point to this object,
+        the accepted answer is forced to be None.
+        """
+        if self.pk is None or (
+            self.accepted_answer and self.accepted_answer.post != self
+        ):
+            self.accepted_answer = None
+
+        super().save(*args, **kwargs)
+
 
 class Tag(models.Model):
     posts = models.ManyToManyField("Post")
