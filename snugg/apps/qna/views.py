@@ -4,6 +4,7 @@ from rest_framework.pagination import CursorPagination
 from rest_framework.viewsets import ModelViewSet
 
 from .models import Post
+from .schemas import post_viewset_schema
 from .serializers import PostSerializer
 
 
@@ -16,6 +17,7 @@ class PostPagination(CursorPagination):
     page_size = 10
 
 
+@post_viewset_schema
 class PostViewSet(ModelViewSet):
     queryset = Post.objects.select_related("field", "writer").prefetch_related("tags")
     serializer_class = PostSerializer
