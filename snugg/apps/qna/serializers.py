@@ -1,10 +1,31 @@
 from rest_framework import serializers
 from taggit.serializers import TaggitSerializer, TagListSerializerField
 
-from .models import Post
+from snugg.apps.user.serializers import UserSerializer
+
+from .models import Field, Post
+
+
+class FieldField(serializers.RelatedField):
+    queryset = Field.objects.all()
+
+    def to_internal_value(self, data):
+        queryset = self.get_queryset()
+
+        try:
+            field = queryset.get(name__iexact=data)
+        except Field.DoesNotExist:
+            raise serializers.ValidationError("존재하지 않는 분야(field)입니다.")
+
+        return field
+
+    def to_representation(self, value):
+        return value.name
 
 
 class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
+    field = FieldField()
+    writer = UserSerializer(read_only=True)
     tags = TagListSerializerField()
 
     class Meta:
@@ -20,7 +41,7 @@ class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
             "accepted_answer",
             "tags",
         )
-        read_only_fields = ("writer", "created_at", "updated_at")
+        read_only_fields = ("created_at", "updated_at")
         extra_kwargs = {"field": {"required": True}}
 
     def validate_accepted_answer(self, value):
