@@ -215,5 +215,6 @@ SPECTACULAR_SETTINGS = {
         "filter": True,
     },
     "COMPONENT_NO_READ_ONLY_REQUIRED": True,
-    "COMPONENT_SPLIT_REQUEST": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+    "COMPONENT_SPLIT_PATCH": False,
 }
