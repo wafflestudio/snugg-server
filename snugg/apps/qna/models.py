@@ -1,11 +1,11 @@
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
 
-from snugg.apps.user.models import User
-
+User = get_user_model()
 choice_limit = models.Q(model="Post") | models.Q(model="Answer")
 
 
