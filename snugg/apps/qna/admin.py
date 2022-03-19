@@ -1,7 +1,7 @@
 from django.contrib import admin
 from mptt.admin import DraggableMPTTAdmin
 
-from .models import Answer, Comment, Field, Post, Tag
+from .models import Answer, Comment, Field, Post
 
 
 class FieldAdmin(DraggableMPTTAdmin):
@@ -16,4 +16,3 @@ admin.site.register(Answer)
 admin.site.register(Comment)
 admin.site.register(Field, FieldAdmin)
 admin.site.register(Post)
-admin.site.register(Tag)

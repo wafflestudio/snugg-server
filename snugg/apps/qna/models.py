@@ -4,6 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
+from taggit.managers import TaggableManager
 
 User = get_user_model()
 choice_limit = models.Q(model="Post") | models.Q(model="Answer")
@@ -48,6 +49,7 @@ class Post(models.Model):
         "Answer", null=True, on_delete=models.CASCADE, related_name="bulletin"
     )
     comments = GenericRelation("Comment", related_query_name="post")
+    tags = TaggableManager()
 
     def save(self, *args, **kwargs):
         """
@@ -63,6 +65,6 @@ class Post(models.Model):
         super().save(*args, **kwargs)
 
 
-class Tag(models.Model):
-    posts = models.ManyToManyField("Post")
-    name = models.CharField(max_length=30)
+# class Tag(models.Model):
+#     posts = models.ManyToManyField("Post")
+#     name = models.CharField(max_length=30)

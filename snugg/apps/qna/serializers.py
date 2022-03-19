@@ -1,9 +1,12 @@
 from rest_framework import serializers
+from taggit.serializers import TaggitSerializer, TagListSerializerField
 
 from .models import Post
 
 
-class PostSerializer(serializers.ModelSerializer):
+class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
+    tags = TagListSerializerField()
+
     class Meta:
         model = Post
         fields = (
@@ -15,6 +18,7 @@ class PostSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "accepted_answer",
+            "tags",
         )
         read_only_fields = ("writer", "created_at", "updated_at")
         extra_kwargs = {"field": {"required": True}}
