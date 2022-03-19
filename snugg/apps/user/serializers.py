@@ -17,7 +17,7 @@ class SignupService(serializers.ModelSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
-        user = super().create(validated_data)
+        user = User.objects.create_user(**validated_data)
         user_data = UserSerializer(user).data
 
         return user_data, jwt_token_of(user)
