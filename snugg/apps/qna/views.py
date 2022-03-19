@@ -12,7 +12,7 @@ class PostFilter(filters.FilterSet):
 
 
 class PostViewSet(ModelViewSet):
-    queryset = Post.objects.all()
+    queryset = Post.objects.select_related("field", "writer").prefetch_related("tags")
     serializer_class = PostSerializer
     filter_backends = (
         OrderingFilter,
@@ -30,4 +30,3 @@ class PostViewSet(ModelViewSet):
 
     # TODO: pagination
     # TODO: test scipts
-    # TODO: query optimization
