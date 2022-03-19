@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "mptt",
     "storages",
     "django_extensions",
+    "django_filters",
     "drf_spectacular",
     "taggit",
 ]
@@ -65,6 +66,7 @@ REST_FRAMEWORK = {
         "snugg.permissions.FullObjectPermissions",
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
 }
 
 AUTHENTICATION_BACKENDS = (
