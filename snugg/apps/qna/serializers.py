@@ -26,7 +26,7 @@ class FieldField(serializers.RelatedField):
 class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
     field = FieldField()
     writer = UserSerializer(read_only=True)
-    tags = TagListSerializerField()
+    tags = TagListSerializerField(required=False)
 
     class Meta:
         model = Post
@@ -42,7 +42,6 @@ class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
             "tags",
         )
         read_only_fields = ("created_at", "updated_at")
-        extra_kwargs = {"field": {"required": True}}
 
     def validate_accepted_answer(self, value):
         if value is not None:
