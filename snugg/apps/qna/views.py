@@ -12,9 +12,14 @@ class PostFilter(filters.FilterSet):
     field = filters.CharFilter(field_name="field__name", lookup_expr="iexact")
     tag = filters.CharFilter(field_name="tags__name", lookup_expr="iexact")
 
+    class Meta:
+        model = Post
+        fields = ("writer",)
+
 
 class PostPagination(CursorPagination):
     page_size = 10
+    page_size_query_param = "page_size"
 
 
 @post_viewset_schema
@@ -30,7 +35,5 @@ class PostViewSet(ModelViewSet):
         "created_at",
         "updated_at",
     )
-    ordering = "-updated_at"
+    ordering = "-created_at"
     pagination_class = PostPagination
-
-    # TODO: test scipts
