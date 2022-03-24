@@ -1,14 +1,13 @@
-import json
 from random import choice
+from urllib.parse import urlencode
 
 import factory
-from django.test import TestCase
+from django.urls import reverse
 from factory.django import DjangoModelFactory
 from faker import Faker
 from rest_framework import status
-from snugg.apps.qna.views import PostPagination
+from rest_framework.test import APITestCase
 from snugg.apps.user.tests import UserFactory
-from snugg.tokens import jwt_token_of
 
 from .models import Answer, Field, Post
 
@@ -27,7 +26,6 @@ class PostFactory(DjangoModelFactory):
         model = Post
 
     # TODO: comments
-    # factory.RelatedFactory for accepted_answer?
     field = factory.SubFactory(FieldFactory)
     writer = factory.SubFactory(UserFactory)
     title = factory.Faker("sentence", nb_words=4)
@@ -52,3 +50,27 @@ class AnswerFactory(DjangoModelFactory):
     post = factory.SubFactory(PostFactory)
     writer = factory.SubFactory(UserFactory)
     content = factory.Faker("text")
+
+
+class PostAPITestCase(APITestCase):
+    """
+    Post CRUD API request methods included.
+    """
+
+    def create_post(self, data):
+        return self.client.post(reverse("post-list"), data=data)
+
+    def retrieve_post(self, pk):
+        return self.client.get(reverse("post-detail", args=[pk]))
+
+    def list_post(self, **params):
+        return self.client.get(f"{reverse('post-list')}?{urlencode(params)}")
+
+    def update_post(self, pk, data):
+        return self.client.put(reverse("post-detail", args=[pk]), data)
+
+    def partial_update_post(self, pk, data):
+        return self.client.patch(reverse("post-detail", args=[pk]), data)
+
+    def destroy_post(self, pk):
+        return self.client.delete(reverse("post-detail", args=[pk]))
