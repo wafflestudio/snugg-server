@@ -27,9 +27,6 @@ class PostViewSet(ModelViewSet):
     )
     filterset_class = PostFilter
     ordering_fields = (
-        "pk",
-        "writer",
-        "title",
         "created_at",
         "updated_at",
     )
