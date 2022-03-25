@@ -11,6 +11,6 @@ services:
     build:
       context: .
       network: host
-    command: gunicorn --bind 0.0.0.0:8000 snugg.wsgi
-    expose:
-      - "8000"
+    command: gunicorn --bind 127.0.0.1:8000 snugg.wsgi
+    ports:
+      - "8000:8000"
