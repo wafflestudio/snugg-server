@@ -3,14 +3,16 @@ version: "3.7"
 services:
   nginx:
     image: nginx:1.20.0
+    ports:
+      - "80:80/tcp"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - django
   django:
     build:
       context: .
       network: host
-    command: gunicorn --bind 127.0.0.1:8000 snugg.wsgi
+    command: gunicorn --bind 0.0.0.0:8000 snugg.wsgi
     ports:
       - "8000:8000"
