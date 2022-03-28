@@ -34,6 +34,7 @@ urlpatterns = [
         "doc/redoc", SpectacularRedocView.as_view(url_name="schema-json"), name="redoc"
     ),
     path("", include("snugg.apps.user.urls")),
+    path("", include("snugg.apps.qna.urls")),
 ]
 
 if settings.DEBUG:

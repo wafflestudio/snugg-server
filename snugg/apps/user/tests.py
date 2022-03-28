@@ -82,7 +82,6 @@ class SignUpTests(TestCase):
                 "is_staff": True,
                 "is_superuser": True,
                 "is_active": False,
-                "is_admin": True,
             }
         )
         response = self.client.post("/auth/signup/", data=data)
@@ -92,7 +91,6 @@ class SignUpTests(TestCase):
         self.assertEqual(user.is_staff, False)
         self.assertEqual(user.is_superuser, False)
         self.assertEqual(user.is_active, True)
-        self.assertEqual(user.is_admin, False)
 
 
 class SigninTest(TestCase):

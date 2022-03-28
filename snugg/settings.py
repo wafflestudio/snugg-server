@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     "mptt",
     "storages",
     "django_extensions",
+    "django_filters",
     "drf_spectacular",
+    "taggit",
 ]
 
 MIDDLEWARE = [
@@ -61,9 +63,18 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+        "snugg.permissions.FullObjectPermissions",
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.CursorPagination",
+    "PAGE_SIZE": 10,
 }
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "snugg.permissions.ObjectPermissionsBackend",
+)
 
 ROOT_URLCONF = "snugg.urls"
 
@@ -176,6 +187,7 @@ DATABASES = {
 }
 
 # JWT Token Settings
+
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": datetime.timedelta(days=1),
@@ -191,6 +203,8 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = "user.User"
+
+# drf-spectacular settings
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "SNUGG API",
@@ -209,5 +223,10 @@ SPECTACULAR_SETTINGS = {
         "filter": True,
     },
     "COMPONENT_NO_READ_ONLY_REQUIRED": True,
-    "COMPONENT_SPLIT_REQUEST": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+    "COMPONENT_SPLIT_PATCH": False,
 }
+
+# taggit settings
+
+TAGGIT_CASE_INSENSITIVE = True

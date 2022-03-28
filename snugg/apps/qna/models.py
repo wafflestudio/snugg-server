@@ -1,11 +1,12 @@
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
+from taggit.managers import TaggableManager
 
-from snugg.apps.user.models import User
-
+User = get_user_model()
 choice_limit = models.Q(model="Post") | models.Q(model="Answer")
 
 
@@ -48,8 +49,22 @@ class Post(models.Model):
         "Answer", null=True, on_delete=models.CASCADE, related_name="bulletin"
     )
     comments = GenericRelation("Comment", related_query_name="post")
+    tags = TaggableManager()
+
+    def save(self, *args, **kwargs):
+        """
+        If this Post object is not created yet,
+        or the accepted answer's 'post' field does not point to this object,
+        the accepted answer is forced to be None.
+        """
+        if self.pk is None or (
+            self.accepted_answer and self.accepted_answer.post != self
+        ):
+            self.accepted_answer = None
+
+        super().save(*args, **kwargs)
 
 
-class Tag(models.Model):
-    posts = models.ManyToManyField("Post")
-    name = models.CharField(max_length=30)
+# class Tag(models.Model):
+#     posts = models.ManyToManyField("Post")
+#     name = models.CharField(max_length=30)
