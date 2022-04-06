@@ -155,8 +155,9 @@ DEFAULT_FILE_STORAGE = os.getenv("DEFAULT_FILE_STORAGE")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 DEBUG = os.environ.get("DEBUG")
+DEBUG = DEBUG is not None and DEBUG.lower() in ("true", "1", "t")
 
-if DEBUG is not None and DEBUG.lower() in ("true", "1", "t"):
+if DEBUG:
     INSTALLED_APPS.append("debug_toolbar")
     MIDDLEWARE.append("debug_toolbar.middleware.DebugToolbarMiddleware")
     INTERNAL_IPS = ["127.0.0.1"]
