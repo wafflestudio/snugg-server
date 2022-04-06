@@ -5,4 +5,4 @@ git checkout develop --quiet
 git pull origin develop
 
 docker-compose down
-docker-compose up -d
+docker-compose up --build -d
