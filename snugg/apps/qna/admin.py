@@ -33,7 +33,7 @@ class PostAdmin(admin.ModelAdmin):
         "title",
     )
 
-    # readonly_fields = ('user_link',)
+    readonly_fields = ("writer_link",)
 
     def writer_link(self, obj):
         return mark_safe(
