@@ -1,7 +1,7 @@
 from django_filters import rest_framework as filters
 from rest_framework.filters import OrderingFilter
 from rest_framework.pagination import CursorPagination
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 from .models import Post
 from .schemas import post_viewset_schema
@@ -37,3 +37,7 @@ class PostViewSet(ModelViewSet):
     )
     ordering = "-created_at"
     pagination_class = PostPagination
+
+
+class AnswerViewSet(GenericViewSet):
+    pass
