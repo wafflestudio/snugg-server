@@ -61,7 +61,7 @@ class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
 
 
 class AnswerSerializer(serializers.ModelSerializer):
-    writer = UserSerializer()
+    writer = UserSerializer(read_only=True)
 
     class Meta:
         model = Answer
