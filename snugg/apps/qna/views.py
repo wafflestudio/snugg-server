@@ -1,5 +1,5 @@
 from django_filters import rest_framework as filters
-from rest_framework.filters import OrderingFilter
+from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.pagination import CursorPagination
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
@@ -28,12 +28,17 @@ class PostViewSet(ModelViewSet):
     serializer_class = PostSerializer
     filter_backends = (
         OrderingFilter,
+        SearchFilter,
         filters.DjangoFilterBackend,
     )
     filterset_class = PostFilter
     ordering_fields = (
         "created_at",
         "updated_at",
+    )
+    search_fields = (
+        "title",
+        "content",
     )
     ordering = "-created_at"
     pagination_class = PostPagination
