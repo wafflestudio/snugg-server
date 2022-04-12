@@ -16,6 +16,9 @@ class Field(MPTTModel):
         "self", on_delete=models.CASCADE, null=True, blank=True, related_name="children"
     )
 
+    def __str__(self):
+        return self.name
+
 
 class Answer(models.Model):
     post = models.ForeignKey("Post", null=True, on_delete=models.CASCADE)
