@@ -62,6 +62,7 @@ class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
 
 class AnswerSerializer(serializers.ModelSerializer):
     writer = UserSerializer(read_only=True)
+    post = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all())
 
     class Meta:
         model = Answer
@@ -78,7 +79,7 @@ class AnswerSerializer(serializers.ModelSerializer):
         if post.accepted_answer is not None:
             raise serializers.ValidationError("이미 답변이 채택된 질문입니다.")
 
-        if post.wirter is self.context.get("request").user:
+        if post.writer is self.context.get("request").user:
             raise serializers.ValidationError("본인의 질문에는 답변을 달 수 없습니다.")
 
         return post
