@@ -4,6 +4,6 @@ from rest_framework.routers import SimpleRouter
 from .views import PostViewSet
 
 router = SimpleRouter()
-router.register("qna/posts", PostViewSet, basename="post")
+router.register("qna/posts", PostViewSet, basename="qna-post")
 
 urlpatterns = (path("", include(router.urls)),)
