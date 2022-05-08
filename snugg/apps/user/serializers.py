@@ -69,6 +69,15 @@ class SignoutService(serializers.Serializer):
         return True
 
 
+class RefreshService(SignoutService):
+    def execute(self):
+        super().execute()
+        user = self.context.get("user")
+        user_data = UserSerializer(user).data
+
+        return user_data, jwt_token_of(user)
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
