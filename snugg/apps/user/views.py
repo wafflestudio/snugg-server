@@ -52,15 +52,15 @@ class AuthViewSet(GenericViewSet):
     @action(
         detail=False,
         methods=["POST"],
-        permissions_classes=(permissions.AllowAny, ),
+        permission_classes=(permissions.AllowAny, ),
         serializer_class=RefreshService,
     )
     def refresh(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user_data, jwt_token = serializer.execute()
+        jwt_token = serializer.execute()
 
-        return Response({"user": user_data, "token": jwt_token})
+        return Response({"token": jwt_token})
 
 
     # TODO: Implement "deactivate" along with PUT /users/{pk}

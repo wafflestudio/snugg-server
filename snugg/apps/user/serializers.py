@@ -1,8 +1,10 @@
+from tokenize import Token
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
 from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.exceptions import TokenError
 
 from snugg.tokens import AccessToken, RefreshToken, jwt_token_of
@@ -69,13 +71,13 @@ class SignoutService(serializers.Serializer):
         return True
 
 
-class RefreshService(SignoutService):
-    def execute(self):
-        super().execute()
-        user = self.context.get("user")
-        user_data = UserSerializer(user).data
+class RefreshService(TokenRefreshSerializer):
+    token_class = RefreshToken
 
-        return user_data, jwt_token_of(user)
+    def execute(self):
+        return {
+            "access": self.validated_data.get("access")
+        }
 
 
 class UserSerializer(serializers.ModelSerializer):
