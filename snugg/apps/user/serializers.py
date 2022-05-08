@@ -49,9 +49,9 @@ class SigninService(serializers.Serializer):
 
 
 class SignoutService(serializers.Serializer):
-    refresh_token = serializers.CharField()
+    refresh = serializers.CharField()
 
-    def validate_refresh_token(self, value):
+    def validate_refresh(self, value):
         try:
             RefreshToken(value)
         except TokenError:
@@ -61,7 +61,7 @@ class SignoutService(serializers.Serializer):
 
     @transaction.atomic
     def execute(self):
-        refresh_token = RefreshToken(self.validated_data.get("refresh_token"))
+        refresh_token = RefreshToken(self.validated_data.get("refresh"))
         refresh_token.blacklist()
 
         request = self.context.get("request")
@@ -71,7 +71,7 @@ class SignoutService(serializers.Serializer):
         return True
 
 
-class RefreshService(TokenRefreshSerializer):
+class RefreshService(SignoutService, TokenRefreshSerializer):
     token_class = RefreshToken
 
     def execute(self):

@@ -4,10 +4,16 @@ from rest_framework import serializers
 from .examples import TestUser
 from .serializers import UserSerializer
 
-
-class Token(serializers.Serializer):
+class RefreshToken(serializers.Serializer):
     refresh = serializers.CharField()
+
+
+class AccessToekn(serializers.Serializer):
     access = serializers.CharField()
+
+
+class Token(AccessToekn, RefreshToken):
+    pass
 
 
 class UserToken(serializers.Serializer):
@@ -52,4 +58,12 @@ auth_viewset_schema = extend_schema_view(
             ),
         },
     ),
+    refresh=extend_schema(
+        summary="Refresh Token",
+        description="Renew refresh token and get new accesss token",
+        responses={
+            200: OpenApiResponse(response=RefreshToken),
+            400: OpenApiResponse(description="Incorrect or missing refresh token.")
+        }
+    )
 )
