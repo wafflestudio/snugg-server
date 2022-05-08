@@ -1,11 +1,11 @@
 from django_filters import rest_framework as filters
-from rest_framework.filters import OrderingFilter
+from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.pagination import CursorPagination
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
-from .models import Post
+from .models import Answer, Post
 from .schemas import post_viewset_schema
-from .serializers import PostSerializer
+from .serializers import AnswerSerializer, PostSerializer
 
 
 class PostFilter(filters.FilterSet):
@@ -28,9 +28,30 @@ class PostViewSet(ModelViewSet):
     serializer_class = PostSerializer
     filter_backends = (
         OrderingFilter,
+        SearchFilter,
         filters.DjangoFilterBackend,
     )
     filterset_class = PostFilter
+    ordering_fields = (
+        "created_at",
+        "updated_at",
+    )
+    search_fields = (
+        "title",
+        "content",
+    )
+    ordering = "-created_at"
+    pagination_class = PostPagination
+
+
+class AnswerViewSet(ModelViewSet):
+    queryset = Answer.objects.select_related("writer")
+    serializer_class = AnswerSerializer
+    filter_backends = (
+        OrderingFilter,
+        filters.DjangoFilterBackend,
+    )
+    filterset_fields = ("writer",)
     ordering_fields = (
         "created_at",
         "updated_at",
