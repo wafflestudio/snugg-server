@@ -163,7 +163,7 @@ class SignoutTests(AuthAPITestCase):
         cls.user = UserFactory()
 
         cls.token = jwt_token_of(cls.user)
-        cls.data = {"refresh_token": cls.token.get("refresh")}
+        cls.data = {"refresh": cls.token.get("refresh")}
 
     def setUp(self):
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.token.get('access')}")
@@ -179,20 +179,20 @@ class SignoutTests(AuthAPITestCase):
 
     def test_signout_refresh_token_wrong(self):
         data = self.data.copy()
-        data.update({"refresh_token": fake.password()})
+        data.update({"refresh": fake.password()})
         response = self.signout(data)
 
         self.assertContains(
-            response, "refresh_token", None, status.HTTP_400_BAD_REQUEST
+            response, "refresh", None, status.HTTP_400_BAD_REQUEST
         )
 
     def test_signout_refresh_token_missing(self):
         data = self.data.copy()
-        data["refresh_token"] = ""
+        data["refresh"] = ""
         response = self.signout(data)
 
         self.assertContains(
-            response, "refresh_token", None, status.HTTP_400_BAD_REQUEST
+            response, "refresh", None, status.HTTP_400_BAD_REQUEST
         )
 
     def test_signout_access_token_missing(self):
