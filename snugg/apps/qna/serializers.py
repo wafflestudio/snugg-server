@@ -3,7 +3,7 @@ from taggit.serializers import TaggitSerializer, TagListSerializerField
 
 from snugg.apps.user.serializers import UserSerializer
 
-from .models import Field, Post
+from .models import Answer, Field, Post
 
 
 class FieldField(serializers.RelatedField):
@@ -52,6 +52,37 @@ class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
                 raise serializers.ValidationError("이 질문에 달린 답변만 채택할 수 있습니다.")
 
         return value
+
+    def create(self, validated_data):
+        user = self.context.get("request").user
+        validated_data["writer"] = user
+
+        return super().create(validated_data)
+
+
+class AnswerSerializer(serializers.ModelSerializer):
+    writer = UserSerializer(read_only=True)
+    post = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all())
+
+    class Meta:
+        model = Answer
+        fields = (
+            "post",
+            "writer",
+            "content",
+            "created_at",
+            "updated_at",
+        )
+        read_only_fields = ("writer", "created_at", "updated_at")
+
+    def validate_post(self, post):
+        if post.accepted_answer is not None:
+            raise serializers.ValidationError("이미 답변이 채택된 질문입니다.")
+
+        if post.writer is self.context.get("request").user:
+            raise serializers.ValidationError("본인의 질문에는 답변을 달 수 없습니다.")
+
+        return post
 
     def create(self, validated_data):
         user = self.context.get("request").user
