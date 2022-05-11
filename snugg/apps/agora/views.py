@@ -4,6 +4,7 @@ from rest_framework.pagination import CursorPagination, PageNumberPagination
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from .models import Lecture, Post
+from .schemas import lecture_viewset_schema, post_viewset_schema
 from .serializers import LectureSerializer, PostSerializer
 
 
@@ -22,6 +23,7 @@ class LecturePagination(PageNumberPagination):
     page_size_query_param = "page_size"
 
 
+@lecture_viewset_schema
 class LectureViewSet(ReadOnlyModelViewSet):
     queryset = Lecture.objects.select_related(
         "university", "college", "major"
@@ -44,6 +46,7 @@ class PostPagination(CursorPagination):
     page_size_query_param = "page_size"
 
 
+@post_viewset_schema
 class PostViewSet(ModelViewSet):
     queryset = Post.objects.select_related(
         "lecture", "writer", "lecture__university", "lecture__college", "lecture__major"
