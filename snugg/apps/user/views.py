@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from .schemas import auth_viewset_schema
-from .serializers import SigninService, SignoutService, SignupService
+from .serializers import SigninService, SignoutService, SignupService, RefreshService
 
 
 @auth_viewset_schema
@@ -48,6 +48,20 @@ class AuthViewSet(GenericViewSet):
         success = serializer.execute()
 
         return Response({"success": bool(success)})
+    
+    @action(
+        detail=False,
+        methods=["POST"],
+        permission_classes=(permissions.AllowAny, ),
+        serializer_class=RefreshService,
+    )
+    def refresh(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        jwt_token = serializer.execute()
+
+        return Response({"token": jwt_token})
+
 
     # TODO: Implement "deactivate" along with PUT /users/{pk}
     # @action(
