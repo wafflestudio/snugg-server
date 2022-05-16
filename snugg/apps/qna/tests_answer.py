@@ -48,9 +48,10 @@ class AnswerCreateTests(AnswerAPITestCase):
     @classmethod
     def setUpTestData(cls) -> None:
         cls.user = UserFactory()
+        cls.user2 = UserFactory()
 
     def setUp(self):
-        self.client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=self.user2)
 
         self.create_post(
             {
@@ -61,6 +62,8 @@ class AnswerCreateTests(AnswerAPITestCase):
             }
         )
 
+        self.client.force_authenticate(user=self.user)
+        
         self.post = Post.objects.first()
 
         self.data = {
