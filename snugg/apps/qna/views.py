@@ -3,6 +3,7 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.pagination import CursorPagination
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
+from ...s3 import create_presigned_post, delete_object
 from .models import Answer, Post
 from .schemas import post_viewset_schema
 from .serializers import AnswerSerializer, PostSerializer
@@ -43,6 +44,33 @@ class PostViewSet(ModelViewSet):
     ordering = "-created_at"
     pagination_class = PostPagination
 
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        path = "/".join(["images", "post", str(response.data["pk"]), ""])
+        response.data["presigned"] = create_presigned_post(
+            path, conditions=[("acl", "public-read")]
+        )
+        return response
+
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+        partial = kwargs.pop("partial", False)
+        pk = kwargs.get("pk")
+        path = "/".join(["images", "post", str(pk), ""])
+        if not partial:
+            delete_object(prefix=path)
+        response.data["presigned"] = create_presigned_post(
+            path, conditions=[("acl", "public-read")]
+        )
+        return response
+
+    def destroy(self, request, *args, **kwargs):
+        response = super().destroy(request, *args, **kwargs)
+        pk = kwargs.get("pk")
+        path = "/".join(["images", "post", str(pk), ""])
+        delete_object(prefix=path)
+        return response
+
 
 class AnswerViewSet(ModelViewSet):
     queryset = Answer.objects.select_related("writer")
@@ -58,3 +86,30 @@ class AnswerViewSet(ModelViewSet):
     )
     ordering = "-created_at"
     pagination_class = PostPagination
+
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        path = "/".join(["images", "answer", str(response.data["pk"]), ""])
+        response.data["presigned"] = create_presigned_post(
+            path, conditions=[("acl", "public-read")]
+        )
+        return response
+
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+        partial = kwargs.pop("partial", False)
+        pk = kwargs.get("pk")
+        path = "/".join(["images", "answer", str(pk), ""])
+        if not partial:
+            delete_object(prefix=path)
+        response.data["presigned"] = create_presigned_post(
+            path, conditions=[("acl", "public-read")]
+        )
+        return response
+
+    def destroy(self, request, *args, **kwargs):
+        response = super().destroy(request, *args, **kwargs)
+        pk = kwargs.get("pk")
+        path = "/".join(["images", "answer", str(pk), ""])
+        delete_object(prefix=path)
+        return response
