@@ -67,6 +67,7 @@ class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer
         fields = (
+            "pk",
             "post",
             "writer",
             "content",
@@ -79,8 +80,13 @@ class AnswerSerializer(serializers.ModelSerializer):
         if post.accepted_answer is not None:
             raise serializers.ValidationError("이미 답변이 채택된 질문입니다.")
 
-        if post.writer is self.context.get("request").user:
+        user = self.context.get("request").user
+
+        if post.writer == user:
             raise serializers.ValidationError("본인의 질문에는 답변을 달 수 없습니다.")
+
+        if post.answer_set.filter(writer=user).exists():
+            raise serializers.ValidationError("이미 답변을 단 질문입니다.")
 
         return post
 
