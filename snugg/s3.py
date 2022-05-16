@@ -40,7 +40,6 @@ def create_presigned_url(
 
 
 def create_presigned_get(key, expiration=3600):
-    key = "/".join((MEDIA_ROOT, key))
     return create_presigned_url(
         "get_object",
         method_parameters={"Bucket": AWS_STORAGE_BUCKET_NAME, "Key": key},
@@ -63,7 +62,6 @@ def create_presigned_post(key, fields=None, conditions=None, expiration=3600):
 
     # Generate a presigned S3 POST URL
     s3_client = boto3.client("s3")
-    key = "/".join((MEDIA_ROOT, key))
     try:
         response = s3_client.generate_presigned_post(
             AWS_STORAGE_BUCKET_NAME,
@@ -101,12 +99,9 @@ def create_presigned_post(key, fields=None, conditions=None, expiration=3600):
 
 
 def delete_object(key=None, prefix=None):
-    print(1, prefix)
-    print(2, key)
     if prefix is None:
         if key is None:
             raise ValueError("At least one argument should be provided")
-        key = "/".join((MEDIA_ROOT, key))
         s3 = boto3.client("s3")
 
         if isinstance(key, str):
@@ -129,8 +124,6 @@ def delete_object(key=None, prefix=None):
         else:
             raise TypeError("object_key should be string or list type")
     else:
-        prefix = "/".join((MEDIA_ROOT, prefix))
-        print(prefix)
         if not prefix.endswith("/"):
             raise ValueError('prefix should end with "/"')
 
