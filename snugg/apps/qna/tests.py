@@ -59,22 +59,22 @@ class PostAPITestCase(APITestCase):
     """
 
     def create_post(self, data):
-        return self.client.post(reverse("post-list"), data=data)
+        return self.client.post(reverse("qna-post-list"), data=data)
 
     def retrieve_post(self, pk):
-        return self.client.get(reverse("post-detail", args=[pk]))
+        return self.client.get(reverse("qna-post-detail", args=[pk]))
 
     def list_post(self, **params):
-        return self.client.get(f"{reverse('post-list')}?{urlencode(params)}")
+        return self.client.get(f"{reverse('qna-post-list')}?{urlencode(params)}")
 
     def update_post(self, pk, data):
-        return self.client.put(reverse("post-detail", args=[pk]), data)
+        return self.client.put(reverse("qna-post-detail", args=[pk]), data)
 
     def partial_update_post(self, pk, data):
-        return self.client.patch(reverse("post-detail", args=[pk]), data)
+        return self.client.patch(reverse("qna-post-detail", args=[pk]), data)
 
     def destroy_post(self, pk):
-        return self.client.delete(reverse("post-detail", args=[pk]))
+        return self.client.delete(reverse("qna-post-detail", args=[pk]))
 
 
 class PostCreateTests(PostAPITestCase):

@@ -35,6 +35,7 @@ urlpatterns = [
     ),
     path("", include("snugg.apps.user.urls")),
     path("", include("snugg.apps.qna.urls")),
+    path("", include("snugg.apps.agora.urls")),
 ]
 
 if settings.DEBUG:

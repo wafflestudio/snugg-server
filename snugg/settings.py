@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "snugg.apps.user",
     "snugg.apps.univ",
     "snugg.apps.qna",
+    "snugg.apps.agora",
     "mptt",
     "storages",
     "django_extensions",
