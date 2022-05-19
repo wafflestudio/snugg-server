@@ -7,7 +7,9 @@ from mptt.models import MPTTModel
 from taggit.managers import TaggableManager
 
 User = get_user_model()
-choice_limit = models.Q(model="Post") | models.Q(model="Answer")
+choice_limit = models.Q(model="Post") | models.Q(
+    model="Answer"
+)  # | models.Q(model="Comment")
 
 
 class Field(MPTTModel):
@@ -37,6 +39,7 @@ class Comment(models.Model):
     )
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
+    replies = GenericRelation("self", related_query_name="comment")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

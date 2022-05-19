@@ -1,9 +1,11 @@
+from django.contrib.contenttypes.models import ContentType
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from taggit.serializers import TaggitSerializer, TagListSerializerField
 
 from snugg.apps.user.serializers import UserSerializer
 
-from .models import Answer, Field, Post
+from .models import Answer, Comment, Field, Post
 
 
 class FieldField(serializers.RelatedField):
@@ -89,3 +91,87 @@ class AnswerSerializer(serializers.ModelSerializer):
         validated_data["writer"] = user
 
         return super().create(validated_data)
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    target = None
+    writer = UserSerializer(read_only=True)
+    replies_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Comment
+        fields = (
+            "pk",
+            "content_type",
+            "object_id",
+            "writer",
+            "content",
+            "replies_count",
+            "created_at",
+            "updated_at",
+        )
+        read_only_fields = ("created_at", "updated_at", "writer")
+        extra_kwargs = {
+            "object_id": {"required": False, "write_only": True},
+            "content_type": {"required": False, "write_only": True},
+        }
+
+    def validate(self, data):
+        object_id = data.get("object_id", None)
+        content_type = self.target
+        # 생성 시에만 수행
+        if content_type:
+            data["content_type"] = ContentType.objects.get_for_model(content_type)
+            if not content_type.objects.filter(id=object_id).exists():
+                raise serializers.ValidationError("해당 글이 존재하지 않습니다.")
+            else:
+                data["object_id"] = object_id
+
+        if content_type == ContentType(Comment):
+            parent = Comment.objects.filter(
+                content_type=ContentType.objects.get_for_model(content_type),
+                object_id=object_id,
+            )
+            if parent.content_type == ContentType.objects.get_for_model(Comment):
+                raise serializers.ValidationError("대댓글까지만 가능합니다.")
+
+        return data
+
+    def create(self, validated_data):
+        user = self.context.get("request").user
+        validated_data["writer"] = user
+
+        return super().create(validated_data)
+
+    def get_replies_count(self, comment):
+        return comment.replies.count()
+
+
+class CommentPostSerializer(CommentSerializer):
+    target = Post
+
+
+class CommentAnswerSerializer(CommentSerializer):
+    target = Answer
+
+
+class ReplySerializer(CommentSerializer):
+    target = Comment
+    writer = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = (
+            "pk",
+            "content_type",
+            "object_id",
+            "writer",
+            "content",
+            "created_at",
+            "updated_at",
+        )
+        read_only_fields = ("created_at", "updated_at", "writer")
+        extra_kwargs = {
+            "object_id": {"required": False, "write_only": True},
+            "content_type": {"required": False, "write_only": True},
+        }
