@@ -235,3 +235,5 @@ SPECTACULAR_SETTINGS = {
 # taggit settings
 
 TAGGIT_CASE_INSENSITIVE = True
+
+CSRF_TRUSTED_ORIGINS = ["https://fp026w45m5.execute-api.ap-northeast-2.amazonaws.com"]
