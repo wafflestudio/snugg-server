@@ -96,6 +96,7 @@ class AnswerViewSet(ModelViewSet):
         "created_at",
         "updated_at",
     )
+    filterset_fields = ["post"]
     ordering = "-created_at"
     pagination_class = PostPagination
 
