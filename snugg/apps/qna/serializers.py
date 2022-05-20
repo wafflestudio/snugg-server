@@ -50,7 +50,7 @@ class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
 
             if value.post != self.instance:
                 raise serializers.ValidationError("이 질문에 달린 답변만 채택할 수 있습니다.")
-            
+
             if value.writer == self.context.get("request").user:
                 raise serializers.ValidationError("자신의 답변은 채택할 수 없습니다.")
 
