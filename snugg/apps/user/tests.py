@@ -182,18 +182,14 @@ class SignoutTests(AuthAPITestCase):
         data.update({"refresh": fake.password()})
         response = self.signout(data)
 
-        self.assertContains(
-            response, "refresh", None, status.HTTP_400_BAD_REQUEST
-        )
+        self.assertContains(response, "refresh", None, status.HTTP_400_BAD_REQUEST)
 
     def test_signout_refresh_token_missing(self):
         data = self.data.copy()
         data["refresh"] = ""
         response = self.signout(data)
 
-        self.assertContains(
-            response, "refresh", None, status.HTTP_400_BAD_REQUEST
-        )
+        self.assertContains(response, "refresh", None, status.HTTP_400_BAD_REQUEST)
 
     def test_signout_access_token_missing(self):
         self.client.credentials()

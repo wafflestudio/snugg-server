@@ -7,8 +7,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from .models import Answer, Post
-from .tests import (FieldFactory, PostAPITestCase, PostFactory, UserFactory,
-                    fake)
+from .tests import FieldFactory, PostAPITestCase, PostFactory, UserFactory, fake
 
 
 class AnswerFactory(DjangoModelFactory):
@@ -63,7 +62,7 @@ class AnswerCreateTests(AnswerAPITestCase):
         )
 
         self.client.force_authenticate(user=self.user)
-        
+
         self.post = Post.objects.first()
 
         self.data = {

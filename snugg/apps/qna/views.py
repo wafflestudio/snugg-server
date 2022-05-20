@@ -4,10 +4,10 @@ from rest_framework.pagination import CursorPagination
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 from ...s3 import create_presigned_post, delete_object
+from ...settings import MEDIA_ROOT
 from .models import Answer, Post
 from .schemas import post_viewset_schema
 from .serializers import AnswerSerializer, PostSerializer
-from ...settings import MEDIA_ROOT
 
 
 class PostFilter(filters.FilterSet):
@@ -52,7 +52,7 @@ class PostViewSet(ModelViewSet):
             "url": "https://snugg-s3.s3.amazonaws.com/",
             "fields": {
                 "key": path,
-            }
+            },
         }
         return response
 
@@ -106,10 +106,9 @@ class AnswerViewSet(ModelViewSet):
             "url": "https://snugg-s3.s3.amazonaws.com/",
             "fields": {
                 "key": path,
-            }
+            },
         }
         return response
-
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
