@@ -1,9 +1,9 @@
-from drf_spectacular.utils import (OpenApiResponse, extend_schema,
-                                   extend_schema_view)
+from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_view
 from rest_framework import serializers
 
 from .examples import TestUser
 from .serializers import UserSerializer
+
 
 class RefreshToken(serializers.Serializer):
     refresh = serializers.CharField()
@@ -64,7 +64,7 @@ auth_viewset_schema = extend_schema_view(
         description="Renew refresh token and get new accesss token",
         responses={
             200: OpenApiResponse(response=RefreshToken),
-            400: OpenApiResponse(description="Incorrect or missing refresh token.")
-        }
-    )
+            400: OpenApiResponse(description="Incorrect or missing refresh token."),
+        },
+    ),
 )

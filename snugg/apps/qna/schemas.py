@@ -1,5 +1,4 @@
-from drf_spectacular.utils import (OpenApiResponse, extend_schema,
-                                   extend_schema_view)
+from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_view
 
 from .serializers import PostSerializer
 
