@@ -99,6 +99,11 @@ class CommentTargetViewSet(GenericViewSet, CreateModelMixin, ListModelMixin):
         target = request.GET.get("id", "")
         if target.isnumeric():
             target = int(target)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if not self.target.objects.filter(id=target).exists():
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
         self.queryset = self.queryset.filter(
             content_type=ContentType.objects.get_for_model(self.target),
@@ -108,9 +113,17 @@ class CommentTargetViewSet(GenericViewSet, CreateModelMixin, ListModelMixin):
         return super().list(self, request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
-        request.data._mutable = True
-        request.data["object_id"] = request.GET.get("id", "")
-        serializer = self.get_serializer(data=request.data)
+        # request.data._mutable = True
+        data = request.data.copy()
+        target = request.GET.get("id", "")
+        if target.isnumeric():
+            target = int(target)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if not self.target.objects.filter(id=target).exists():
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        data["object_id"] = target
+        serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         super().perform_create(serializer)
         headers = super().get_success_headers(serializer.data)
@@ -135,7 +148,11 @@ class ReplyViewSet(CommentTargetViewSet):
 
 
 class CommentViewSet(
-    GenericViewSet, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin
+    GenericViewSet,
+    RetrieveModelMixin,
+    UpdateModelMixin,
+    DestroyModelMixin,
+    ListModelMixin,
 ):
     queryset = Comment.objects.select_related("writer")
     serializer_class = CommentSerializer
