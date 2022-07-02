@@ -14,6 +14,8 @@ from rest_framework.pagination import CursorPagination
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
+from ...s3 import create_presigned_post, delete_object
+from ...settings import MEDIA_ROOT
 from .models import Answer, Comment, Post
 from .schemas import post_viewset_schema
 from .serializers import (
@@ -66,6 +68,44 @@ class PostViewSet(ModelViewSet):
     ordering = "-created_at"
     pagination_class = PostPagination
 
+    def retrieve(self, request, *args, **kwargs):
+        response = super().retrieve(request, *args, **kwargs)
+        path = "/".join([MEDIA_ROOT, "images", "post", str(response.data["pk"]), ""])
+        response.data["presigned"] = {
+            "url": "https://snugg-s3.s3.amazonaws.com/",
+            "fields": {
+                "key": path,
+            },
+        }
+        return response
+
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        path = "/".join([MEDIA_ROOT, "images", "post", str(response.data["pk"]), ""])
+        response.data["presigned"] = create_presigned_post(
+            path, conditions=[("acl", "public-read")]
+        )
+        return response
+
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+        partial = kwargs.pop("partial", False)
+        pk = kwargs.get("pk")
+        path = "/".join([MEDIA_ROOT, "images", "post", str(pk), ""])
+        if not partial:
+            delete_object(prefix=path)
+        response.data["presigned"] = create_presigned_post(
+            path, conditions=[("acl", "public-read")]
+        )
+        return response
+
+    def destroy(self, request, *args, **kwargs):
+        response = super().destroy(request, *args, **kwargs)
+        pk = kwargs.get("pk")
+        path = "/".join([MEDIA_ROOT, "images", "post", str(pk), ""])
+        delete_object(prefix=path)
+        return response
+
 
 class AnswerViewSet(ModelViewSet):
     queryset = Answer.objects.select_related("writer")
@@ -79,8 +119,47 @@ class AnswerViewSet(ModelViewSet):
         "created_at",
         "updated_at",
     )
+    filterset_fields = ["post"]
     ordering = "-created_at"
     pagination_class = PostPagination
+
+    def retrieve(self, request, *args, **kwargs):
+        response = super().retrieve(request, *args, **kwargs)
+        path = "/".join([MEDIA_ROOT, "images", "answer", str(response.data["pk"]), ""])
+        response.data["presigned"] = {
+            "url": "https://snugg-s3.s3.amazonaws.com/",
+            "fields": {
+                "key": path,
+            },
+        }
+        return response
+
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        path = "/".join([MEDIA_ROOT, "images", "answer", str(response.data["pk"]), ""])
+        response.data["presigned"] = create_presigned_post(
+            path, conditions=[("acl", "public-read")]
+        )
+        return response
+
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+        partial = kwargs.pop("partial", False)
+        pk = kwargs.get("pk")
+        path = "/".join([MEDIA_ROOT, "images", "answer", str(pk), ""])
+        if not partial:
+            delete_object(prefix=path)
+        response.data["presigned"] = create_presigned_post(
+            path, conditions=[("acl", "public-read")]
+        )
+        return response
+
+    def destroy(self, request, *args, **kwargs):
+        response = super().destroy(request, *args, **kwargs)
+        pk = kwargs.get("pk")
+        path = "/".join([MEDIA_ROOT, "images", "answer", str(pk), ""])
+        delete_object(prefix=path)
+        return response
 
 
 class CommentTargetViewSet(GenericViewSet, CreateModelMixin, ListModelMixin):

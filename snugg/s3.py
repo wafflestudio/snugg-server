@@ -3,7 +3,7 @@ import logging
 import boto3
 from botocore.exceptions import ClientError
 
-from snugg.settings import AWS_STORAGE_BUCKET_NAME
+from snugg.settings import AWS_STORAGE_BUCKET_NAME, MEDIA_ROOT
 
 
 def create_presigned_url(

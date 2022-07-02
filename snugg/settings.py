@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "snugg.apps.user",
     "snugg.apps.univ",
     "snugg.apps.qna",
+    "snugg.apps.agora",
     "mptt",
     "storages",
     "django_extensions",
@@ -148,6 +149,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 # Media files
 
 MEDIA_URL = os.getenv("MEDIA_URL")
+MEDIA_ROOT = os.getenv("MEDIA_ROOT")
 DEFAULT_FILE_STORAGE = os.getenv("DEFAULT_FILE_STORAGE")
 
 # Default primary key field type
@@ -233,3 +235,5 @@ SPECTACULAR_SETTINGS = {
 # taggit settings
 
 TAGGIT_CASE_INSENSITIVE = True
+
+CSRF_TRUSTED_ORIGINS = ["https://fp026w45m5.execute-api.ap-northeast-2.amazonaws.com"]

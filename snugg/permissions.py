@@ -50,6 +50,7 @@ class ObjectPermissionsBackend:
         "qna.post": "writer",
         "qna.answer": "writer",
         "qna.comment": "writer",
+        "agora.post": "writer",
     }
 
     def authenticate(self, *args, **kwargs):
