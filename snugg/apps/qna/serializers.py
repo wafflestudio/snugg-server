@@ -150,7 +150,9 @@ class CommentSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
     def get_replies_count(self, comment):
-        return comment.replies.count()
+        return Comment.objects.filter(
+            content_type__comment__object_id=comment.id
+        ).count()
 
 
 class CommentPostSerializer(CommentSerializer):
