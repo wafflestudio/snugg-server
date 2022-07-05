@@ -137,10 +137,7 @@ class CommentCreateTests(CommentAPITestCase):
         self.assertEqual(comment.object_id, self.comment.id)
 
 
-#
-# class CommentReadTests(CommentAPITestCase):
-#     @classmethod
-#     def setUpTestData(cls):
-#         cls.comments = CommentFactory.create_batch(25)
-#
-#
+class CommentReadTests(CommentAPITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.comments = CommentFactory.create_batch(25)

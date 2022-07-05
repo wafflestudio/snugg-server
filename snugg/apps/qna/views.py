@@ -192,7 +192,6 @@ class CommentTargetViewSet(GenericViewSet, CreateModelMixin, ListModelMixin):
         return super().list(self, request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
-        # request.data._mutable = True
         data = request.data.copy()
         target = request.GET.get("id", "")
         if target.isnumeric():
