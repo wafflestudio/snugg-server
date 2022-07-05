@@ -1,4 +1,9 @@
-from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_view
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+    extend_schema_view,
+)
 
 from .serializers import PostSerializer
 
@@ -25,6 +30,9 @@ post_viewset_schema = extend_schema_view(
     list=extend_schema(
         summary="List QNA Post",
         description="List the posts on the QNA board.",
+        parameters=OpenApiParameter(
+            name="search", description="Search Parameters", type="str"
+        ),
     ),
     update=extend_schema(
         summary="Update QNA Post",
