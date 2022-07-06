@@ -46,6 +46,9 @@ class PostAdmin(admin.ModelAdmin):
     writer_link.short_description = "writer"
 
 
+# class AnswerAdmin(admin.ModelAdmin):
+
+
 # Register your models here.
 admin.site.register(Answer)
 admin.site.register(Comment)
