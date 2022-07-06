@@ -22,7 +22,7 @@ class CommentFactory(DjangoModelFactory):
     class Meta:
         model = Comment
 
-    object_id = 1
+    object_id = fake.pyint(min_value=1, max_value=100)
     content_type = ContentType.objects.get_for_model(Answer)
     writer = factory.SubFactory(UserFactory)
     content = factory.Faker("text")
@@ -52,7 +52,8 @@ class CommentAPITestCase(AnswerAPITestCase):
         return self.client.get(reverse("comment-detail", args=[pk]))
 
     def list_comment(self, **params):
-        return self.client.get(f"{reverse('comment-list')}?{urlencode(params)}")
+        return self.client.get(reverse("comment-list"))
+        # return self.client.get(f"{reverse('comment-list')}?{urlencode(params)}")
 
     def list_comment_post(self, **params):
         return self.client.get(f"{reverse('post-comment-list')}?{urlencode(params)}")
@@ -141,3 +142,44 @@ class CommentReadTests(CommentAPITestCase):
     @classmethod
     def setUpTestData(cls):
         cls.comments = CommentFactory.create_batch(25)
+
+    def test_comment_retrieve(self):
+        comment = choice(self.comments)
+        response = self.retrieve_comment(comment.pk)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get("writer").get("email"), comment.writer.email)
+        self.assertEqual(response.data.get("content"), comment.content)
+
+    def test_comment_retrieve_not_found(self):
+        response = self.retrieve_comment(999)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_comment_list(self):
+        response = self.list_comment()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class CommentUpdateTests(CommentAPITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = UserFactory()
+        cls.comment = CommentFactory(writer=cls.user)
+
+        cls.data = {
+            "content": fake.text(),
+        }
+
+    def setUp(self):
+        self.client.force_authenticate(user=self.user)
+
+    def test_post_update(self):
+        response = self.update_comment(self.comment.pk, self.data)
+        self.comment.refresh_from_db()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get("writer").get("pk"), self.user.pk)
+
+        self.assertEqual(response.data.get("content"), self.data.get("content"))
