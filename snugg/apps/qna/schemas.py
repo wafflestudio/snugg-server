@@ -1,6 +1,7 @@
 from drf_spectacular.utils import (
     OpenApiParameter,
     OpenApiResponse,
+    OpenApiTypes,
     extend_schema,
     extend_schema_view,
 )
@@ -36,9 +37,11 @@ post_viewset_schema = extend_schema_view(
     list=extend_schema(
         summary="List QNA Post",
         description="List the posts on the QNA board.",
-        parameters=OpenApiParameter(
-            name="search", description="Search Parameters", type="str"
-        ),
+        parameters=[
+            OpenApiParameter(
+                name="search", description="Search Parameters", type=OpenApiTypes.STR
+            )
+        ],
     ),
     update=extend_schema(
         summary="Update QNA Post",
@@ -90,6 +93,9 @@ comment_post_viewset_schema = extend_schema_view(
     create=extend_schema(
         summary="Create Comment by Post id",
         description="Create new comment at the QNA Post.",
+        parameters=[
+            OpenApiParameter(name="id", description="Post id", type=OpenApiTypes.INT)
+        ],
         responses={
             201: OpenApiResponse(response=CommentPostSerializer),
             400: OpenApiResponse(description="Invalid or insufficient data."),
@@ -114,6 +120,9 @@ comment_answer_viewset_schema = extend_schema_view(
     create=extend_schema(
         summary="Create Comment by Answer id",
         description="Create new comment at the QNA Answer.",
+        parameters=[
+            OpenApiParameter(name="id", description="Answer id", type=OpenApiTypes.INT)
+        ],
         responses={
             201: OpenApiResponse(response=CommentAnswerSerializer),
             400: OpenApiResponse(description="Invalid or insufficient data."),
@@ -138,6 +147,9 @@ reply_viewset_schema = extend_schema_view(
     create=extend_schema(
         summary="Create Comment by Comment id",
         description="Create new reply.",
+        parameters=[
+            OpenApiParameter(name="id", description="Comment id", type=OpenApiTypes.INT)
+        ],
         responses={
             201: OpenApiResponse(response=CommentAnswerSerializer),
             400: OpenApiResponse(description="Invalid or insufficient data."),

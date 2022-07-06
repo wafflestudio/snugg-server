@@ -1,5 +1,6 @@
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import OpenApiTypes, extend_schema_field
 from rest_framework import serializers
 from taggit.serializers import TaggitSerializer, TagListSerializerField
 
@@ -149,6 +150,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
         return super().create(validated_data)
 
+    @extend_schema_field(OpenApiTypes.INT)
     def get_replies_count(self, comment):
         return Comment.objects.filter(
             content_type__comment__object_id=comment.id
