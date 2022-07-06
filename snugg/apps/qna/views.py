@@ -17,7 +17,13 @@ from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from ...s3 import create_presigned_post, delete_object
 from ...settings import MEDIA_ROOT
 from .models import Answer, Comment, Post
-from .schemas import post_viewset_schema
+from .schemas import (
+    comment_answer_viewset_schema,
+    comment_post_viewset_schema,
+    comment_viewset_schema,
+    post_viewset_schema,
+    reply_viewset_schema,
+)
 from .serializers import (
     AnswerSerializer,
     CommentAnswerSerializer,
@@ -166,10 +172,7 @@ class CommentTargetViewSet(GenericViewSet, CreateModelMixin, ListModelMixin):
     target = None
     queryset = Comment.objects.select_related("writer")
     serializer_class = None
-    filter_backends = (
-        OrderingFilter,
-        filters.DjangoFilterBackend,
-    )
+    filter_backends = (OrderingFilter,)
     ordering_fields = ("created_at",)
     ordering = "-created_at"
     pagination_class = CommentPagination
@@ -210,21 +213,25 @@ class CommentTargetViewSet(GenericViewSet, CreateModelMixin, ListModelMixin):
         )
 
 
+@comment_post_viewset_schema
 class CommentPostViewSet(CommentTargetViewSet):
     target = Post
     serializer_class = CommentPostSerializer
 
 
+@comment_answer_viewset_schema
 class CommentAnswerViewSet(CommentTargetViewSet):
     target = Answer
     serializer_class = CommentAnswerSerializer
 
 
+@reply_viewset_schema
 class ReplyViewSet(CommentTargetViewSet):
     target = Comment
     serializer_class = ReplySerializer
 
 
+@comment_viewset_schema
 class CommentViewSet(
     GenericViewSet,
     RetrieveModelMixin,
@@ -234,3 +241,16 @@ class CommentViewSet(
 ):
     queryset = Comment.objects.select_related("writer")
     serializer_class = CommentSerializer
+    filter_backends = (OrderingFilter, filters.DjangoFilterBackend)
+    ordering_fields = ("created_at", "updated_at")
+    ordering = "-created_at"
+    pagination_class = CommentPagination
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.delete(request, *args, **kwargs)
