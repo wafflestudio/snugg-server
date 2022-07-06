@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from snugg.apps.user.serializers import UserSerializer
+from snugg.apps.user.serializers import UserPublicSerializer
 
 from .models import Lecture, Post
 
@@ -44,7 +44,7 @@ class LectureField(serializers.RelatedField):
 
 class PostSerializer(serializers.ModelSerializer):
     lecture = LectureField()
-    writer = UserSerializer(read_only=True)
+    writer = UserPublicSerializer(read_only=True)
 
     class Meta:
         model = Post

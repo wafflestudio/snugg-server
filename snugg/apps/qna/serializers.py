@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from taggit.serializers import TaggitSerializer, TagListSerializerField
 
-from snugg.apps.user.serializers import UserSerializer
+from snugg.apps.user.serializers import UserPublicSerializer
 
 from .models import Answer, Field, Post
 
@@ -25,7 +25,7 @@ class FieldField(serializers.RelatedField):
 
 class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
     field = FieldField()
-    writer = UserSerializer(read_only=True)
+    writer = UserPublicSerializer(read_only=True)
     tags = TagListSerializerField(required=False)
 
     class Meta:
@@ -64,7 +64,7 @@ class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
 
 
 class AnswerSerializer(serializers.ModelSerializer):
-    writer = UserSerializer(read_only=True)
+    writer = UserPublicSerializer(read_only=True)
     post = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all())
 
     class Meta:
