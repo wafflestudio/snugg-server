@@ -30,9 +30,13 @@ post_viewset_schema = extend_schema_view(
     list=extend_schema(
         summary="List QNA Post",
         description="List the posts on the QNA board.",
-        parameters=OpenApiParameter(
-            name="search", description="Search Parameters", type="str"
-        ),
+        parameters=[
+            OpenApiParameter(name="search", description="Search Parameters"),
+            OpenApiParameter(
+                name="search_type",
+                description="Customize search type with comma-seperate fields",
+            ),
+        ],
     ),
     update=extend_schema(
         summary="Update QNA Post",
