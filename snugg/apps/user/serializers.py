@@ -83,3 +83,27 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("pk", "email", "username", "birth_date", "created_at", "last_login")
+
+
+class PasswordService(serializers.Serializer):
+    old_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True)
+
+    def validate_old_password(self, value):
+        user = self.context.get("request").user
+        if not user.check_password(value):
+            raise serializers.ValidationError("비밀번호가 일치하지 않습니다.")
+
+        return value
+
+    def validate_new_password(self, value):
+        # 패스워드 유효성 검사는 프론트엔드에서 처리하도록 한다.
+
+        return value
+
+    def execute(self):
+        user = self.context.get("request").user
+        user.set_password(self.validated_data.get("new_password"))
+        user.save()
+
+        return True

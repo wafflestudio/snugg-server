@@ -4,7 +4,13 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from .schemas import auth_viewset_schema
-from .serializers import RefreshService, SigninService, SignoutService, SignupService
+from .serializers import (
+    PasswordService,
+    RefreshService,
+    SigninService,
+    SignoutService,
+    SignupService,
+)
 
 
 @auth_viewset_schema
@@ -61,6 +67,19 @@ class AuthViewSet(GenericViewSet):
         jwt_token = serializer.execute()
 
         return Response({"token": jwt_token})
+
+    @action(
+        detail=False,
+        methods=["PUT"],
+        permission_classes=(permissions.IsAuthenticated,),
+        serializer_class=PasswordService,
+    )
+    def password(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.execute()
+
+        return Response({"notice": "비밀번호가 정상적으로 변경되었습니다. 새로운 비밀번호로 다시 로그인해주세요."})
 
     # TODO: Implement "deactivate" along with PUT /users/{pk}
     # @action(
