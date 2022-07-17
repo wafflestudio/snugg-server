@@ -41,6 +41,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(max_length=255, unique=True)
     username = models.CharField(max_length=30, null=False)
+    self_introduction = models.TextField(blank=True, default="")
     profile_image = models.ImageField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     birth_date = models.DateField(null=True)
