@@ -1,4 +1,14 @@
-from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_view
+from lib2to3.pgen2.token import OP
+from tkinter.filedialog import Open
+
+from drf_spectacular.utils import (
+    OpenApiExample,
+    OpenApiParameter,
+    OpenApiResponse,
+    OpenApiTypes,
+    extend_schema,
+    extend_schema_view,
+)
 from rest_framework import serializers
 
 from .examples import TestUser
@@ -65,6 +75,38 @@ auth_viewset_schema = extend_schema_view(
         responses={
             200: OpenApiResponse(response=RefreshToken),
             400: OpenApiResponse(description="Incorrect or missing refresh token."),
+        },
+    ),
+    password=extend_schema(
+        summary="Password",
+        description="Change password for user.",
+        responses={
+            200: OpenApiResponse(response=Success),
+            400: OpenApiResponse(description="Incorrect password."),
+        },
+        parameters=[
+            OpenApiParameter(
+                name="old_password",
+                location="body",
+                type=OpenApiTypes.STR,
+                description="기존 비밀번호를 입력해야 합니다.",
+                required=True,
+            ),
+            OpenApiParameter(
+                name="new_password",
+                location="body",
+                type=OpenApiTypes.STR,
+                description="새 비밀번호를 입력해야 합니다.",
+                required=True,
+            ),
+        ],
+    ),
+    profile=extend_schema(
+        summary="Profile",
+        description="See or update profile for user.",
+        responses={
+            200: OpenApiResponse(response=UserSerializer),
+            400: OpenApiResponse(description="Incorrect or insufficient data."),
         },
     ),
 )
