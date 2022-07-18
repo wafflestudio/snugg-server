@@ -90,7 +90,6 @@ class CommentCreateTests(CommentAPITestCase):
     def test_comment_answer_create(self):
         response = self.create_comment(self.data, answer=self.answer.id)
         comment = Comment.objects.last()
-
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data.get("writer").get("pk"), self.user.pk)
         self.assertEqual(response.data.get("replies_count"), 0)
@@ -143,11 +142,6 @@ class CommentReadTests(CommentAPITestCase):
 
     def test_comment_list(self):
         response = self.list_comment()
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_answer_comment_list(self):
-        response = self.list_comment(answer=1)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 

@@ -1,21 +1,8 @@
 from django.contrib.contenttypes.models import ContentType
 from django.http.request import QueryDict
 from django_filters import rest_framework as filters
-from drf_spectacular.utils import (
-    OpenApiParameter,
-    OpenApiResponse,
-    OpenApiTypes,
-    extend_schema,
-)
 from rest_framework import status
 from rest_framework.filters import OrderingFilter, SearchFilter
-from rest_framework.mixins import (
-    CreateModelMixin,
-    DestroyModelMixin,
-    ListModelMixin,
-    RetrieveModelMixin,
-    UpdateModelMixin,
-)
 from rest_framework.pagination import CursorPagination
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
@@ -198,10 +185,10 @@ class CommentViewSet(ModelViewSet):
 
     @comment_list_view
     def list(self, request, *args, **kwargs):
-        answer = request.query_params.get("answer", "")
-        comment = request.query_params.get("comment", "")
-        post = request.query_params.get("post", "")
-        if answer:
+        answer = request.GET.get("answer", "")
+        comment = request.GET.get("comment", "")
+        post = request.GET.get("post", "")
+        if answer != "":
             if answer.isnumeric():
                 answer = int(answer)
             else:
@@ -209,10 +196,10 @@ class CommentViewSet(ModelViewSet):
             if not Answer.objects.filter(id=answer).exists():
                 return Response(status=status.HTTP_404_NOT_FOUND)
             self.queryset = self.queryset.filter(
-                content_type=ContentType.objects.get_for_model(Answer),
+                content_type=ContentType.objects.get_for_model(Answer).id,
                 object_id=answer,
             )
-        elif comment:
+        elif comment != "":
             if comment.isnumeric():
                 comment = int(comment)
             else:
@@ -220,10 +207,10 @@ class CommentViewSet(ModelViewSet):
             if not Comment.objects.filter(id=comment).exists():
                 return Response(status=status.HTTP_404_NOT_FOUND)
             self.queryset = self.queryset.filter(
-                content_type=ContentType.objects.get_for_model(Comment),
+                content_type=ContentType.objects.get_for_model(Comment).id,
                 object_id=comment,
             )
-        elif post:
+        elif post != "":
             if post.isnumeric():
                 post = int(post)
             else:
@@ -231,7 +218,7 @@ class CommentViewSet(ModelViewSet):
             if not Post.objects.filter(id=post).exists():
                 return Response(status=status.HTTP_404_NOT_FOUND)
             self.queryset = self.queryset.filter(
-                content_type=ContentType.objects.get_for_model(Post),
+                content_type=ContentType.objects.get_for_model(Post).id,
                 object_id=post,
             )
 
@@ -239,11 +226,11 @@ class CommentViewSet(ModelViewSet):
 
     @comment_create_view
     def create(self, request, *args, **kwargs):
-        answer = request.query_params.get("answer", "")
-        comment = request.query_params.get("comment", "")
-        post = request.query_params.get("post", "")
+        answer = request.GET.get("answer", "")
+        comment = request.GET.get("comment", "")
+        post = request.GET.get("post", "")
         data = request.data.copy()
-        if answer:
+        if answer != "":
             if answer.isnumeric():
                 answer = int(answer)
             else:
@@ -251,7 +238,7 @@ class CommentViewSet(ModelViewSet):
             if not Answer.objects.filter(id=answer).exists():
                 return Response(status=status.HTTP_404_NOT_FOUND)
             data["object_id"] = answer
-            data["content_type"] = ContentType.objects.get_for_model(Answer)
+            data["content_type"] = ContentType.objects.get_for_model(Answer).id
             serializer = self.get_serializer(data=data)
             serializer.is_valid(raise_exception=True)
             super().perform_create(serializer)
@@ -259,7 +246,7 @@ class CommentViewSet(ModelViewSet):
             return Response(
                 serializer.data, status=status.HTTP_201_CREATED, headers=headers
             )
-        elif comment:
+        elif comment != "":
             if comment.isnumeric():
                 comment = int(comment)
             else:
@@ -267,7 +254,7 @@ class CommentViewSet(ModelViewSet):
             if not Comment.objects.filter(id=comment).exists():
                 return Response(status=status.HTTP_404_NOT_FOUND)
             data["object_id"] = comment
-            data["content_type"] = ContentType.objects.get_for_model(Comment)
+            data["content_type"] = ContentType.objects.get_for_model(Comment).id
             serializer = self.get_serializer(data=data)
             serializer.is_valid(raise_exception=True)
             super().perform_create(serializer)
@@ -275,7 +262,7 @@ class CommentViewSet(ModelViewSet):
             return Response(
                 serializer.data, status=status.HTTP_201_CREATED, headers=headers
             )
-        elif post:
+        elif post != "":
             if post.isnumeric():
                 post = int(post)
             else:
@@ -283,7 +270,7 @@ class CommentViewSet(ModelViewSet):
             if not Post.objects.filter(id=post).exists():
                 return Response(status=status.HTTP_404_NOT_FOUND)
             data["object_id"] = post
-            data["content_type"] = ContentType.objects.get_for_model(Post)
+            data["content_type"] = ContentType.objects.get_for_model(Post).pk
             serializer = self.get_serializer(data=data)
             serializer.is_valid(raise_exception=True)
             super().perform_create(serializer)
