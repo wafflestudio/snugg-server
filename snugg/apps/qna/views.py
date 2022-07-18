@@ -231,14 +231,32 @@ class ReplyViewSet(CommentTargetViewSet):
     serializer_class = ReplySerializer
 
 
-@comment_viewset_schema
-class CommentViewSet(
-    GenericViewSet,
-    RetrieveModelMixin,
-    UpdateModelMixin,
-    DestroyModelMixin,
-    ListModelMixin,
-):
+# @comment_viewset_schema
+# class CommentViewSet(
+#     GenericViewSet,
+#     RetrieveModelMixin,
+#     UpdateModelMixin,
+#     DestroyModelMixin,
+#     ListModelMixin,
+# ):
+#     queryset = Comment.objects.select_related("writer")
+#     serializer_class = CommentSerializer
+#     filter_backends = (OrderingFilter, filters.DjangoFilterBackend)
+#     ordering_fields = ("created_at", "updated_at")
+#     ordering = "-created_at"
+#     pagination_class = CommentPagination
+#
+#     def get(self, request, *args, **kwargs):
+#         return self.retrieve(request, *args, **kwargs)
+#
+#     def put(self, request, *args, **kwargs):
+#         return self.update(request, *args, **kwargs)
+#
+#     def delete(self, request, *args, **kwargs):
+#         return self.delete(request, *args, **kwargs)
+
+
+class CommentViewSet(ModelViewSet):
     queryset = Comment.objects.select_related("writer")
     serializer_class = CommentSerializer
     filter_backends = (OrderingFilter, filters.DjangoFilterBackend)
@@ -246,11 +264,119 @@ class CommentViewSet(
     ordering = "-created_at"
     pagination_class = CommentPagination
 
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+    def list(self, request, *args, **kwargs):
+        answer = request.query_params.get("answer", "")
+        comment = request.query_params.get("comment", "")
+        post = request.query_params.get("post", "")
+        if answer:
+            if not Answer.objects.filter(id=answer).exists():
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            else:
+                if answer.isnumeric():
+                    answer = int(answer)
+                else:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+                if not Answer.objects.filter(id=answer).exists():
+                    return Response(status=status.HTTP_404_NOT_FOUND)
+                self.queryset = self.queryset.filter(
+                    content_type=ContentType.objects.get_for_model(Answer),
+                    object_id=answer,
+                )
+        elif comment:
+            if not Comment.objects.filter(id=comment).exists():
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            else:
+                if comment.isnumeric():
+                    comment = int(comment)
+                else:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+                if not Comment.objects.filter(id=comment).exists():
+                    return Response(status=status.HTTP_404_NOT_FOUND)
+                self.queryset = self.queryset.filter(
+                    content_type=ContentType.objects.get_for_model(Comment),
+                    object_id=comment,
+                )
+        elif post:
+            if not Post.objects.filter(id=post).exists():
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            else:
+                print(post)
+                if post.isnumeric():
+                    post = int(post)
+                else:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+                if not Post.objects.filter(id=post).exists():
+                    return Response(status=status.HTTP_404_NOT_FOUND)
+                self.queryset = self.queryset.filter(
+                    content_type=ContentType.objects.get_for_model(Post),
+                    object_id=post,
+                )
 
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
+        return super().list(self, request, *args, **kwargs)
 
-    def delete(self, request, *args, **kwargs):
-        return self.delete(request, *args, **kwargs)
+    def create(self, request, *args, **kwargs):
+        answer = request.query_params.get("answer", "")
+        comment = request.query_params.get("comment", "")
+        post = request.query_params.get("post", "")
+        if answer:
+            if not Answer.objects.filter(id=answer).exists():
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            else:
+                data = request.data.copy()
+                if answer.isnumeric():
+                    answer = int(answer)
+                else:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+                if not Answer.objects.filter(id=answer).exists():
+                    return Response(status=status.HTTP_404_NOT_FOUND)
+                data["object_id"] = answer
+                data["content_type"] = ContentType.objects.get_for_model(Answer)
+                serializer = self.get_serializer(data=data)
+                serializer.is_valid(raise_exception=True)
+                super().perform_create(serializer)
+                headers = super().get_success_headers(serializer.data)
+                return Response(
+                    serializer.data, status=status.HTTP_201_CREATED, headers=headers
+                )
+        elif comment:
+            if not Comment.objects.filter(id=comment).exists():
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            else:
+                data = request.data.copy()
+                if comment.isnumeric():
+                    comment = int(comment)
+                else:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+                if not Comment.objects.filter(id=comment).exists():
+                    return Response(status=status.HTTP_404_NOT_FOUND)
+                data["object_id"] = comment
+                data["content_type"] = ContentType.objects.get_for_model(Comment)
+                serializer = self.get_serializer(data=data)
+                serializer.is_valid(raise_exception=True)
+                super().perform_create(serializer)
+                headers = super().get_success_headers(serializer.data)
+                return Response(
+                    serializer.data, status=status.HTTP_201_CREATED, headers=headers
+                )
+        elif post:
+            if not Post.objects.filter(id=post).exists():
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            else:
+                data = request.data.copy()
+                if post.isnumeric():
+                    post = int(post)
+                else:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+                if not Post.objects.filter(id=post).exists():
+                    return Response(status=status.HTTP_404_NOT_FOUND)
+                data["object_id"] = post
+                data["content_type"] = ContentType.objects.get_for_model(Post)
+                serializer = self.get_serializer(data=data)
+                serializer.is_valid(raise_exception=True)
+                super().perform_create(serializer)
+                headers = super().get_success_headers(serializer.data)
+                return Response(
+                    serializer.data, status=status.HTTP_201_CREATED, headers=headers
+                )
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)

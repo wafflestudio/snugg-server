@@ -101,7 +101,6 @@ class AnswerSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    target = None
     writer = UserSerializer(read_only=True)
     replies_count = serializers.SerializerMethodField()
 
@@ -117,15 +116,21 @@ class CommentSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         )
-        read_only_fields = ("created_at", "updated_at", "writer")
-        extra_kwargs = {
-            "object_id": {"required": False, "write_only": True},
-            "content_type": {"required": False, "write_only": True},
-        }
+        read_only_fields = (
+            "created_at",
+            "updated_at",
+            "writer",
+            "object_id",
+            "content_type",
+        )
+        # extra_kwargs = {
+        #     "object_id": {"required": False, "write_only": True},
+        #     "content_type": {"required": False, "write_only": True},
+        # }
 
     def validate(self, data):
         object_id = data.get("object_id", None)
-        content_type = self.target
+        content_type = data.get("content_type", None)
         # 생성 시에만 수행
         if content_type:
             data["content_type"] = ContentType.objects.get_for_model(content_type)

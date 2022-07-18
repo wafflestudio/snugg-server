@@ -22,10 +22,56 @@ class CommentFactory(DjangoModelFactory):
     class Meta:
         model = Comment
 
-    object_id = fake.pyint(min_value=1, max_value=100)
+    object_id = 1
     content_type = ContentType.objects.get_for_model(Answer)
     writer = factory.SubFactory(UserFactory)
     content = factory.Faker("text")
+
+
+# class CommentAPITestCase(AnswerAPITestCase):
+#     """
+#     Comment CRUD API request methods included.
+#     """
+#
+#     def create_comment_post(self, data, **params):
+#         return self.client.post(
+#             f"{reverse('post-comment-list')}?{urlencode(params)}", data=data
+#         )
+#
+#     def create_comment_answer(self, data, **params):
+#         return self.client.post(
+#             f"{reverse('answer-comment-list')}?{urlencode(params)}", data=data
+#         )
+#
+#     def create_reply(self, data, **params):
+#         return self.client.post(
+#             f"{reverse('reply-list')}?{urlencode(params)}", data=data
+#         )
+#
+#     def retrieve_comment(self, pk):
+#         return self.client.get(reverse("comment-detail", args=[pk]))
+#
+#     def list_comment(self, **params):
+#         return self.client.get(reverse("comment-list"))
+#         # return self.client.get(f"{reverse('comment-list')}?{urlencode(params)}")
+#
+#     def list_comment_post(self, **params):
+#         return self.client.get(f"{reverse('post-comment-list')}?{urlencode(params)}")
+#
+#     def list_comment_answer(self, **params):
+#         return self.client.get(f"{reverse('answer-comment-list')}?{urlencode(params)}")
+#
+#     def list_reply(self, **params):
+#         return self.client.get(f"{reverse('reply-list')}?{urlencode(params)}")
+#
+#     def update_comment(self, pk, data):
+#         return self.client.put(reverse("comment-detail", args=[pk]), data)
+#
+#     def partial_update_comment(self, pk, data):
+#         return self.client.patch(reverse("comment-detail", args=[pk]), data)
+#
+#     def destroy_comment(self, pk):
+#         return self.client.delete(reverse("comment-detail", args=[pk]))
 
 
 class CommentAPITestCase(AnswerAPITestCase):
@@ -33,36 +79,16 @@ class CommentAPITestCase(AnswerAPITestCase):
     Comment CRUD API request methods included.
     """
 
-    def create_comment_post(self, data, **params):
+    def create_comment(self, data, **params):
         return self.client.post(
-            f"{reverse('post-comment-list')}?{urlencode(params)}", data=data
-        )
-
-    def create_comment_answer(self, data, **params):
-        return self.client.post(
-            f"{reverse('answer-comment-list')}?{urlencode(params)}", data=data
-        )
-
-    def create_reply(self, data, **params):
-        return self.client.post(
-            f"{reverse('reply-list')}?{urlencode(params)}", data=data
+            f"{reverse('comment-list')}?{urlencode(params)}", data=data
         )
 
     def retrieve_comment(self, pk):
         return self.client.get(reverse("comment-detail", args=[pk]))
 
     def list_comment(self, **params):
-        return self.client.get(reverse("comment-list"))
-        # return self.client.get(f"{reverse('comment-list')}?{urlencode(params)}")
-
-    def list_comment_post(self, **params):
-        return self.client.get(f"{reverse('post-comment-list')}?{urlencode(params)}")
-
-    def list_comment_answer(self, **params):
-        return self.client.get(f"{reverse('answer-comment-list')}?{urlencode(params)}")
-
-    def list_reply(self, **params):
-        return self.client.get(f"{reverse('reply-list')}?{urlencode(params)}")
+        return self.client.get(f"{reverse('comment-list')}?{urlencode(params)}")
 
     def update_comment(self, pk, data):
         return self.client.put(reverse("comment-detail", args=[pk]), data)
@@ -90,7 +116,7 @@ class CommentCreateTests(CommentAPITestCase):
         self.client.force_authenticate(user=self.user)
 
     def test_comment_post_create(self):
-        response = self.create_comment_post(self.data, id=self.post.id)
+        response = self.create_comment(self.data, post=self.post.id)
         comment = Comment.objects.last()
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -103,12 +129,12 @@ class CommentCreateTests(CommentAPITestCase):
         self.assertEqual(comment.object_id, self.post.id)
 
     def test_comment_post_create_id_wrong(self):
-        response = self.create_comment_post(self.data, id=100)
+        response = self.create_comment(self.data, post=100)
 
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_comment_answer_create(self):
-        response = self.create_comment_answer(self.data, id=self.answer.id)
+        response = self.create_comment(self.data, answer=self.answer.id)
         comment = Comment.objects.last()
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -123,7 +149,7 @@ class CommentCreateTests(CommentAPITestCase):
         self.assertEqual(comment.object_id, self.answer.id)
 
     def test_reply_create(self):
-        response = self.create_reply(self.data, id=self.comment.id)
+        response = self.create_comment(self.data, comment=self.comment.id)
         comment = Comment.objects.last()
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -141,7 +167,12 @@ class CommentCreateTests(CommentAPITestCase):
 class CommentReadTests(CommentAPITestCase):
     @classmethod
     def setUpTestData(cls):
+        cls.user = UserFactory()
+        cls.answer = AnswerFactory(writer=cls.user)
         cls.comments = CommentFactory.create_batch(25)
+
+    def setUp(self):
+        self.client.force_authenticate(user=self.user)
 
     def test_comment_retrieve(self):
         comment = choice(self.comments)
@@ -158,6 +189,11 @@ class CommentReadTests(CommentAPITestCase):
 
     def test_comment_list(self):
         response = self.list_comment()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_answer_comment_list(self):
+        response = self.list_comment(answer=1)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
