@@ -4,7 +4,7 @@ from drf_spectacular.utils import OpenApiTypes, extend_schema_field
 from rest_framework import serializers
 from taggit.serializers import TaggitSerializer, TagListSerializerField
 
-from snugg.apps.user.serializers import UserPublicSerializer
+from snugg.apps.user.serializers import UserPublicSerializer, UserSerializer
 
 from .models import Answer, Comment, Field, Post
 
