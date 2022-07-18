@@ -28,52 +28,6 @@ class CommentFactory(DjangoModelFactory):
     content = factory.Faker("text")
 
 
-# class CommentAPITestCase(AnswerAPITestCase):
-#     """
-#     Comment CRUD API request methods included.
-#     """
-#
-#     def create_comment_post(self, data, **params):
-#         return self.client.post(
-#             f"{reverse('post-comment-list')}?{urlencode(params)}", data=data
-#         )
-#
-#     def create_comment_answer(self, data, **params):
-#         return self.client.post(
-#             f"{reverse('answer-comment-list')}?{urlencode(params)}", data=data
-#         )
-#
-#     def create_reply(self, data, **params):
-#         return self.client.post(
-#             f"{reverse('reply-list')}?{urlencode(params)}", data=data
-#         )
-#
-#     def retrieve_comment(self, pk):
-#         return self.client.get(reverse("comment-detail", args=[pk]))
-#
-#     def list_comment(self, **params):
-#         return self.client.get(reverse("comment-list"))
-#         # return self.client.get(f"{reverse('comment-list')}?{urlencode(params)}")
-#
-#     def list_comment_post(self, **params):
-#         return self.client.get(f"{reverse('post-comment-list')}?{urlencode(params)}")
-#
-#     def list_comment_answer(self, **params):
-#         return self.client.get(f"{reverse('answer-comment-list')}?{urlencode(params)}")
-#
-#     def list_reply(self, **params):
-#         return self.client.get(f"{reverse('reply-list')}?{urlencode(params)}")
-#
-#     def update_comment(self, pk, data):
-#         return self.client.put(reverse("comment-detail", args=[pk]), data)
-#
-#     def partial_update_comment(self, pk, data):
-#         return self.client.patch(reverse("comment-detail", args=[pk]), data)
-#
-#     def destroy_comment(self, pk):
-#         return self.client.delete(reverse("comment-detail", args=[pk]))
-
-
 class CommentAPITestCase(AnswerAPITestCase):
     """
     Comment CRUD API request methods included.
@@ -131,7 +85,7 @@ class CommentCreateTests(CommentAPITestCase):
     def test_comment_post_create_id_wrong(self):
         response = self.create_comment(self.data, post=100)
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_comment_answer_create(self):
         response = self.create_comment(self.data, answer=self.answer.id)

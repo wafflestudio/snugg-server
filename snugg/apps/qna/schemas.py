@@ -89,85 +89,46 @@ post_viewset_schema = extend_schema_view(
     ),
 )
 
-comment_post_viewset_schema = extend_schema_view(
-    create=extend_schema(
-        summary="Create Comment by Post id",
-        description="Create new comment at the QNA Post.",
-        parameters=[
-            OpenApiParameter(name="id", description="Post id", type=OpenApiTypes.INT)
-        ],
-        responses={
-            201: OpenApiResponse(response=CommentPostSerializer),
-            400: OpenApiResponse(description="Invalid or insufficient data."),
-            401: OpenApiResponse(
-                description="Missing authentication header, or access token expired."
-            ),
-            404: OpenApiResponse(description="Post not found."),
-        },
-    ),
-    list=extend_schema(
-        summary="List Comments by Post id",
-        description="List the comments at the QNA Post.",
-        responses={
-            200: OpenApiResponse(response=CommentPostSerializer),
-            400: OpenApiResponse(description="Invalid or insufficient data."),
-            404: OpenApiResponse(description="Post not found."),
-        },
-    ),
+comment_create_view = extend_schema(
+    summary="Create Comment with parent's id",
+    description="Create the Comments. ?answer={answer_id} or ?post={post_id} or ?comment={comment_id}",
+    parameters=[
+        OpenApiParameter(
+            name="answer",
+            description="Answer id",
+            type=OpenApiTypes.INT,
+            location=OpenApiParameter.QUERY,
+        ),
+        OpenApiParameter(name="post", description="Post id", type=OpenApiTypes.INT),
+        OpenApiParameter(
+            name="comment", description="Comment id", type=OpenApiTypes.INT
+        ),
+    ],
+    responses={
+        201: OpenApiResponse(response=CommentAnswerSerializer),
+        400: OpenApiResponse(description="Invalid or insufficient data."),
+        401: OpenApiResponse(
+            description="Missing authentication header, or access token expired."
+        ),
+        404: OpenApiResponse(description="Parent not found."),
+    },
 )
 
-comment_answer_viewset_schema = extend_schema_view(
-    create=extend_schema(
-        summary="Create Comment by Answer id",
-        description="Create new comment at the QNA Answer.",
-        parameters=[
-            OpenApiParameter(name="id", description="Answer id", type=OpenApiTypes.INT)
-        ],
-        responses={
-            201: OpenApiResponse(response=CommentAnswerSerializer),
-            400: OpenApiResponse(description="Invalid or insufficient data."),
-            401: OpenApiResponse(
-                description="Missing authentication header, or access token expired."
-            ),
-            404: OpenApiResponse(description="Answer not found."),
-        },
-    ),
-    list=extend_schema(
-        summary="List Comments by Answer id",
-        description="List the comments at the QNA Answer.",
-        responses={
-            200: OpenApiResponse(response=CommentAnswerSerializer),
-            400: OpenApiResponse(description="Invalid or insufficient data."),
-            404: OpenApiResponse(description="Answer not found."),
-        },
-    ),
-)
-
-reply_viewset_schema = extend_schema_view(
-    create=extend_schema(
-        summary="Create Comment by Comment id",
-        description="Create new reply.",
-        parameters=[
-            OpenApiParameter(name="id", description="Comment id", type=OpenApiTypes.INT)
-        ],
-        responses={
-            201: OpenApiResponse(response=CommentAnswerSerializer),
-            400: OpenApiResponse(description="Invalid or insufficient data."),
-            401: OpenApiResponse(
-                description="Missing authentication header, or access token expired."
-            ),
-            404: OpenApiResponse(description="Comment not found."),
-        },
-    ),
-    list=extend_schema(
-        summary="List Comments by Comment id",
-        description="List the replies at the Comment.",
-        responses={
-            200: OpenApiResponse(response=ReplySerializer),
-            400: OpenApiResponse(description="Invalid or insufficient data."),
-            404: OpenApiResponse(description="Comment not found."),
-        },
-    ),
+comment_list_view = extend_schema(
+    summary="List Comments with parent's id",
+    description="List the Comments. ?answer={answer_id} or ?post={post_id} or ?comment={comment_id}",
+    parameters=[
+        OpenApiParameter(name="answer", description="Answer id", type=OpenApiTypes.INT),
+        OpenApiParameter(name="post", description="Post id", type=OpenApiTypes.INT),
+        OpenApiParameter(
+            name="comment", description="Comment id", type=OpenApiTypes.INT
+        ),
+    ],
+    responses={
+        200: OpenApiResponse(response=CommentSerializer),
+        400: OpenApiResponse(description="Invalid or insufficient data."),
+        404: OpenApiResponse(description="Parent not found."),
+    },
 )
 
 comment_viewset_schema = extend_schema_view(
@@ -221,15 +182,6 @@ comment_viewset_schema = extend_schema_view(
                 description="Requesting user is not the owner of the comment."
             ),
             404: OpenApiResponse(description="Comment for given id not found."),
-        },
-    ),
-    list=extend_schema(
-        summary="List Comments by Comment id",
-        description="List the replies at the Comment.",
-        responses={
-            200: OpenApiResponse(response=ReplySerializer),
-            400: OpenApiResponse(description="Invalid or insufficient data."),
-            404: OpenApiResponse(description="Comment not found."),
         },
     ),
 )
