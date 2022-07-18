@@ -120,31 +120,22 @@ class CommentSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "writer",
-            "object_id",
-            "content_type",
         )
-        # extra_kwargs = {
-        #     "object_id": {"required": False, "write_only": True},
-        #     "content_type": {"required": False, "write_only": True},
-        # }
+        extra_kwargs = {
+            "object_id": {"write_only": True, "required": False},
+            "content_type": {"write_only": True, "required": False},
+        }
 
     def validate(self, data):
         object_id = data.get("object_id", None)
         content_type = data.get("content_type", None)
-        # 생성 시에만 수행
-        if content_type:
-            data["content_type"] = ContentType.objects.get_for_model(content_type)
-            if not content_type.objects.filter(id=object_id).exists():
-                raise serializers.ValidationError("해당 글이 존재하지 않습니다.")
-            else:
-                data["object_id"] = object_id
 
-        if content_type == ContentType(Comment):
+        if content_type == ContentType.objects.get_for_model(Comment).id:
             parent = Comment.objects.filter(
-                content_type=ContentType.objects.get_for_model(content_type),
+                content_type=content_type,
                 object_id=object_id,
             )
-            if parent.content_type == ContentType.objects.get_for_model(Comment):
+            if parent.content_type == ContentType.objects.get_for_model(Comment).id:
                 raise serializers.ValidationError("대댓글까지만 가능합니다.")
 
         return data

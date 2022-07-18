@@ -8,7 +8,7 @@ from taggit.managers import TaggableManager
 
 User = get_user_model()
 choice_limit = (
-    models.Q(model="Post") | models.Q(model="Answer") | models.Q(model="Comment")
+    models.Q(model="post") | models.Q(model="answer") | models.Q(model="comment")
 )
 
 
