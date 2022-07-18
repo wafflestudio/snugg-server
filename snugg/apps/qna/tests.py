@@ -206,7 +206,7 @@ class PostReadTests(PostAPITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get("field"), post.field.name)
-        self.assertEqual(response.data.get("writer").get("email"), post.writer.email)
+        self.assertEqual(response.data.get("writer").get("username"), post.writer.username)
         self.assertEqual(response.data.get("title"), post.title)
         self.assertEqual(response.data.get("content"), post.content)
 

@@ -90,6 +90,12 @@ class PostViewSet(ModelViewSet):
         }
         return response
 
+    def list(self, request, *args, **kwargs):
+        self.search_fields = request.query_params.get(
+            "search_type", "title,content"
+        ).split(",")
+        return super().list(request, *args, **kwargs)
+
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
         path = "/".join([MEDIA_ROOT, "images", "post", str(response.data["pk"]), ""])
@@ -123,6 +129,7 @@ class AnswerViewSet(ModelViewSet):
     serializer_class = AnswerSerializer
     filter_backends = (
         OrderingFilter,
+        SearchFilter,
         filters.DjangoFilterBackend,
     )
     filterset_fields = ("writer",)
@@ -130,6 +137,7 @@ class AnswerViewSet(ModelViewSet):
         "created_at",
         "updated_at",
     )
+    search_fields = ("content",)
     filterset_fields = ["post"]
     ordering = "-created_at"
     pagination_class = PostPagination
@@ -144,6 +152,12 @@ class AnswerViewSet(ModelViewSet):
             },
         }
         return response
+
+    def list(self, request, *args, **kwargs):
+        self.search_fields = request.query_params.get("search_type", "content").split(
+            ","
+        )
+        return super().list(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
