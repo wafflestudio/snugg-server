@@ -1,9 +1,12 @@
+from django.contrib.contenttypes.models import ContentType
+from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import OpenApiTypes, extend_schema_field
 from rest_framework import serializers
 from taggit.serializers import TaggitSerializer, TagListSerializerField
 
-from snugg.apps.user.serializers import UserPublicSerializer
+from snugg.apps.user.serializers import UserPublicSerializer, UserSerializer
 
-from .models import Answer, Field, Post
+from .models import Answer, Comment, Field, Post
 
 
 class FieldField(serializers.RelatedField):
@@ -95,3 +98,86 @@ class AnswerSerializer(serializers.ModelSerializer):
         validated_data["writer"] = user
 
         return super().create(validated_data)
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    writer = UserSerializer(read_only=True)
+    replies_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Comment
+        fields = (
+            "pk",
+            "content_type",
+            "object_id",
+            "writer",
+            "content",
+            "replies_count",
+            "created_at",
+            "updated_at",
+        )
+        read_only_fields = (
+            "created_at",
+            "updated_at",
+            "writer",
+        )
+        extra_kwargs = {
+            "object_id": {"write_only": True, "required": False},
+            "content_type": {"write_only": True, "required": False},
+        }
+
+    def validate(self, data):
+        object_id = data.get("object_id", None)
+        content_type = data.get("content_type", None)
+
+        if content_type == ContentType.objects.get_for_model(Comment).id:
+            parent = Comment.objects.filter(
+                content_type=content_type,
+                object_id=object_id,
+            )
+            if parent.content_type == ContentType.objects.get_for_model(Comment).id:
+                raise serializers.ValidationError("대댓글까지만 가능합니다.")
+
+        return data
+
+    def create(self, validated_data):
+        user = self.context.get("request").user
+        validated_data["writer"] = user
+
+        return super().create(validated_data)
+
+    @extend_schema_field(OpenApiTypes.INT)
+    def get_replies_count(self, comment):
+        return Comment.objects.filter(
+            content_type__comment__object_id=comment.id
+        ).count()
+
+
+class CommentPostSerializer(CommentSerializer):
+    target = Post
+
+
+class CommentAnswerSerializer(CommentSerializer):
+    target = Answer
+
+
+class ReplySerializer(CommentSerializer):
+    target = Comment
+    writer = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = (
+            "pk",
+            "content_type",
+            "object_id",
+            "writer",
+            "content",
+            "created_at",
+            "updated_at",
+        )
+        read_only_fields = ("created_at", "updated_at", "writer")
+        extra_kwargs = {
+            "object_id": {"required": False, "write_only": True},
+            "content_type": {"required": False, "write_only": True},
+        }
