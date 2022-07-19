@@ -4,7 +4,14 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from .schemas import auth_viewset_schema
-from .serializers import RefreshService, SigninService, SignoutService, SignupService
+from .serializers import (
+    PasswordService,
+    RefreshService,
+    SigninService,
+    SignoutService,
+    SignupService,
+    UserSerializer,
+)
 
 
 @auth_viewset_schema
@@ -62,18 +69,31 @@ class AuthViewSet(GenericViewSet):
 
         return Response({"token": jwt_token})
 
-    # TODO: Implement "deactivate" along with PUT /users/{pk}
-    # @action(
-    #     detail=False,
-    #     methods=["POST"],
-    # )
-    # def deactivate(self, request):
-    #     user = authenticate(
-    #         email=request.user.email, password=request.data.get("password")
-    #     )
-    #     if user is not request.user:
-    #         raise AuthenticationFailed("아이디 또는 비밀번호를 확인하세요.")
-    #     self.signout(request)
-    #     user.is_active = False
-    #     user.save()
-    #     return Response({"success": True})
+    @action(
+        detail=False,
+        methods=["PUT"],
+        permission_classes=(permissions.IsAuthenticated,),
+        serializer_class=PasswordService,
+    )
+    def password(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.execute()
+
+        return Response({"notice": "비밀번호가 정상적으로 변경되었습니다. 새로운 비밀번호로 다시 로그인해주세요."})
+
+    @action(
+        detail=False,
+        methods=["GET", "PUT"],
+        permission_classes=(permissions.IsAuthenticated,),
+        serializer_class=UserSerializer,
+    )
+    def profile(self, request):
+        if request.method == "GET":
+            serializer = self.get_serializer(request.user)
+            return Response(serializer.data)
+        elif request.method == "PUT":
+            serializer = self.get_serializer(request.user, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.execute()
+            return Response({"notice": "프로필이 정상적으로 변경되었습니다."})

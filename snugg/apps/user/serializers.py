@@ -81,7 +81,71 @@ class RefreshService(SignoutService, TokenRefreshSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("pk", "email", "username", "birth_date", "created_at", "last_login")
+        fields = (
+            "pk",
+            "email",
+            "username",
+            "birth_date",
+            "self_introduction",
+            "created_at",
+            "last_login",
+        )
+        read_only_fields = ("created_at", "last_login")
+
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exclude(pk=self.instance.pk).exists():
+            raise serializers.ValidationError("이미 사용중인 이메일입니다.")
+        return value
+
+    def validate_username(self, value):
+        if User.objects.filter(username=value).exclude(pk=self.instance.pk).exists():
+            raise serializers.ValidationError("이미 사용중인 아이디입니다.")
+        return value
+
+    def validate_birth_date(self, value):
+        if value > datetime.now().date():
+            raise serializers.ValidationError("생년월일을 확인해주세요.")
+        return value
+
+    def validate_self_introduction(self, value):
+        if len(value) > 100:
+            raise serializers.ValidationError("자기소개는 100자 이내로 작성해주세요.")
+        return value
+
+    def update(self, user, validated_data):
+        user.email = validated_data.get("email", user.email)
+        user.username = validated_data.get("username", user.username)
+        user.birth_date = validated_data.get("birth_date", user.birth_date)
+        user.self_introduction = validated_data.get(
+            "self_introduction", user.self_introduction
+        )
+        user.save()
+
+        return user
+
+
+class PasswordService(serializers.Serializer):
+    old_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True)
+
+    def validate_old_password(self, value):
+        user = self.context.get("request").user
+        if not user.check_password(value):
+            raise serializers.ValidationError("비밀번호가 일치하지 않습니다.")
+
+        return value
+
+    def validate_new_password(self, value):
+        # 패스워드 유효성 검사는 프론트엔드에서 처리하도록 한다.
+
+        return value
+
+    def execute(self):
+        user = self.context.get("request").user
+        user.set_password(self.validated_data.get("new_password"))
+        user.save()
+
+        return True
 
 
 class UserPublicSerializer(serializers.ModelSerializer):
