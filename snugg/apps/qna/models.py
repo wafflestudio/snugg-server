@@ -7,7 +7,9 @@ from mptt.models import MPTTModel
 from taggit.managers import TaggableManager
 
 User = get_user_model()
-choice_limit = models.Q(model="Post") | models.Q(model="Answer")
+choice_limit = (
+    models.Q(model="post") | models.Q(model="answer") | models.Q(model="comment")
+)
 
 
 class Field(MPTTModel):
