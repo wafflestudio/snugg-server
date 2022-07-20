@@ -3,9 +3,11 @@ from rest_framework.viewsets import GenericViewSet, mixins
 from snugg.s3 import create_presigned_post
 
 from .models import Directory
+from .schemas import presigned_viewset_schema
 from .serializers import DirectorySerializer
 
 
+@presigned_viewset_schema
 class PresignedURLViewSet(mixins.CreateModelMixin, GenericViewSet):
     serializer_class = DirectorySerializer
     queryset = Directory.objects
