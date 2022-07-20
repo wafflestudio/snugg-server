@@ -4,7 +4,7 @@ from drf_spectacular.utils import OpenApiTypes, extend_schema_field
 from rest_framework import serializers
 from taggit.serializers import TaggitSerializer, TagListSerializerField
 
-from snugg.apps.user.serializers import UserPublicSerializer, UserSerializer
+from snugg.apps.user.serializers import UserPublicSerializer
 
 from .models import Answer, Comment, Field, Post
 
@@ -101,7 +101,7 @@ class AnswerSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    writer = UserSerializer(read_only=True)
+    writer = UserPublicSerializer(read_only=True)
     replies_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -163,7 +163,7 @@ class CommentAnswerSerializer(CommentSerializer):
 
 class ReplySerializer(CommentSerializer):
     target = Comment
-    writer = UserSerializer(read_only=True)
+    writer = UserPublicSerializer(read_only=True)
 
     class Meta:
         model = Comment

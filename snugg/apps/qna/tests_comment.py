@@ -132,7 +132,6 @@ class CommentReadTests(CommentAPITestCase):
         response = self.retrieve_comment(comment.pk)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data.get("writer").get("email"), comment.writer.email)
         self.assertEqual(response.data.get("content"), comment.content)
 
     def test_comment_retrieve_not_found(self):
