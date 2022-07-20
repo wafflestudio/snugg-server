@@ -1,4 +1,4 @@
-from tokenize import Token
+import datetime
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
@@ -7,6 +7,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
+
 from snugg.tokens import AccessToken, RefreshToken, jwt_token_of
 
 from .models import User
