@@ -1,25 +1,17 @@
 from urllib.parse import urlencode
 
-import factory
 from django.urls import reverse
-from factory.django import DjangoModelFactory
+from faker import Faker
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from .models import Answer, Post
-from .tests import FieldFactory, PostAPITestCase, PostFactory, UserFactory, fake
+from ..models import Answer, Post
+from .factories import PostFactory, UserFactory
+
+fake = Faker()
 
 
-class AnswerFactory(DjangoModelFactory):
-    class Meta:
-        model = Answer
-
-    post = factory.SubFactory(PostFactory)
-    writer = factory.SubFactory(UserFactory)
-    content = factory.Faker("text")
-
-
-class AnswerAPITestCase(PostAPITestCase):
+class AnswerAPITestCase(APITestCase):
     """
     Answer CRUD API request methods included.
     """
@@ -47,28 +39,15 @@ class AnswerCreateTests(AnswerAPITestCase):
     @classmethod
     def setUpTestData(cls) -> None:
         cls.user = UserFactory()
-        cls.user2 = UserFactory()
+        cls.post = PostFactory(writer=UserFactory())
 
-    def setUp(self):
-        self.client.force_authenticate(user=self.user2)
-
-        self.create_post(
-            {
-                "field": FieldFactory().name,
-                "title": fake.sentence(nb_words=4),
-                "content": fake.text(),
-                "tags": fake.words(),
-            }
-        )
-
-        self.client.force_authenticate(user=self.user)
-
-        self.post = Post.objects.first()
-
-        self.data = {
-            "post": self.post.pk,
+        cls.data = {
+            "post": cls.post.pk,
             "content": fake.text(),
         }
+
+    def setUp(self):
+        self.client.force_authenticate(user=self.user)
 
     def test_answer_create(self):
         response = self.create_answer(self.data)

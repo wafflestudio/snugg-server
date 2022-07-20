@@ -1,11 +1,10 @@
 from django.contrib.contenttypes.models import ContentType
-from django.http.request import QueryDict
 from django_filters import rest_framework as filters
 from rest_framework import status
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.pagination import CursorPagination
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet, ModelViewSet
+from rest_framework.viewsets import ModelViewSet
 
 from ...s3 import create_presigned_post, delete_object
 from ...settings import MEDIA_ROOT
@@ -16,14 +15,7 @@ from .schemas import (
     comment_viewset_schema,
     post_viewset_schema,
 )
-from .serializers import (
-    AnswerSerializer,
-    CommentAnswerSerializer,
-    CommentPostSerializer,
-    CommentSerializer,
-    PostSerializer,
-    ReplySerializer,
-)
+from .serializers import AnswerSerializer, CommentSerializer, PostSerializer
 
 
 class PostFilter(filters.FilterSet):

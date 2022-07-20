@@ -1,14 +1,6 @@
 from lib2to3.pgen2.token import OP
-from tkinter.filedialog import Open
 
-from drf_spectacular.utils import (
-    OpenApiExample,
-    OpenApiParameter,
-    OpenApiResponse,
-    OpenApiTypes,
-    extend_schema,
-    extend_schema_view,
-)
+from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_view
 from rest_framework import serializers
 
 from .examples import TestUser
@@ -19,11 +11,11 @@ class RefreshToken(serializers.Serializer):
     refresh = serializers.CharField()
 
 
-class AccessToekn(serializers.Serializer):
+class AccessToken(serializers.Serializer):
     access = serializers.CharField()
 
 
-class Token(AccessToekn, RefreshToken):
+class Token(AccessToken, RefreshToken):
     pass
 
 
@@ -84,22 +76,22 @@ auth_viewset_schema = extend_schema_view(
             200: OpenApiResponse(response=Success),
             400: OpenApiResponse(description="Incorrect password."),
         },
-        parameters=[
-            OpenApiParameter(
-                name="old_password",
-                location="body",
-                type=OpenApiTypes.STR,
-                description="기존 비밀번호를 입력해야 합니다.",
-                required=True,
-            ),
-            OpenApiParameter(
-                name="new_password",
-                location="body",
-                type=OpenApiTypes.STR,
-                description="새 비밀번호를 입력해야 합니다.",
-                required=True,
-            ),
-        ],
+        # parameters=[
+        #     OpenApiParameter(
+        #         name="old_password",
+        #         location="body",
+        #         type=OpenApiTypes.STR,
+        #         description="기존 비밀번호를 입력해야 합니다.",
+        #         required=True,
+        #     ),
+        #     OpenApiParameter(
+        #         name="new_password",
+        #         location="body",
+        #         type=OpenApiTypes.STR,
+        #         description="새 비밀번호를 입력해야 합니다.",
+        #         required=True,
+        #     ),
+        # ],
     ),
     profile=extend_schema(
         summary="Profile",
