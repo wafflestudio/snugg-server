@@ -1,34 +1,19 @@
 from random import choice
 from urllib.parse import urlencode
 
-import factory
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
-from factory.django import DjangoModelFactory
 from faker import Faker
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from snugg.apps.qna.tests import FieldFactory, PostFactory
-from snugg.apps.qna.tests_answer import AnswerAPITestCase, AnswerFactory
-from snugg.apps.user.tests import UserFactory
-
-from .models import Answer, Comment, Field, Post
+from ..models import Answer, Comment, Post
+from .factories import AnswerFactory, CommentFactory, PostFactory, UserFactory
 
 fake = Faker()
 
 
-class CommentFactory(DjangoModelFactory):
-    class Meta:
-        model = Comment
-
-    object_id = 1
-    content_type = ContentType.objects.get_for_model(Answer)
-    writer = factory.SubFactory(UserFactory)
-    content = factory.Faker("text")
-
-
-class CommentAPITestCase(AnswerAPITestCase):
+class CommentAPITestCase(APITestCase):
     """
     Comment CRUD API request methods included.
     """

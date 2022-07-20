@@ -1,56 +1,15 @@
 from random import choice
 from urllib.parse import urlencode
 
-import factory
 from django.urls import reverse
-from factory.django import DjangoModelFactory
 from faker import Faker
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from snugg.apps.user.tests import UserFactory
-
-from .models import Answer, Field, Post
+from ..models import Post
+from .factories import AnswerFactory, FieldFactory, PostFactory, UserFactory
 
 fake = Faker()
-
-
-class FieldFactory(DjangoModelFactory):
-    class Meta:
-        model = Field
-
-    name = factory.Faker("word")
-
-
-class PostFactory(DjangoModelFactory):
-    class Meta:
-        model = Post
-
-    # TODO: comments
-    field = factory.SubFactory(FieldFactory)
-    writer = factory.SubFactory(UserFactory)
-    title = factory.Faker("sentence", nb_words=4)
-    content = factory.Faker("text")
-
-    @factory.post_generation
-    def tags(self, create, extracted):
-        if not create:
-            return
-
-        if extracted:
-            self.tags.add(*extracted)
-        else:
-            self.tags.add(*fake.words())
-
-
-class AnswerFactory(DjangoModelFactory):
-    class Meta:
-        model = Answer
-
-    # TODO: comments
-    post = factory.SubFactory(PostFactory)
-    writer = factory.SubFactory(UserFactory)
-    content = factory.Faker("text")
 
 
 class PostAPITestCase(APITestCase):
@@ -206,7 +165,9 @@ class PostReadTests(PostAPITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get("field"), post.field.name)
-        self.assertEqual(response.data.get("writer").get("username"), post.writer.username)
+        self.assertEqual(
+            response.data.get("writer").get("username"), post.writer.username
+        )
         self.assertEqual(response.data.get("title"), post.title)
         self.assertEqual(response.data.get("content"), post.content)
 
