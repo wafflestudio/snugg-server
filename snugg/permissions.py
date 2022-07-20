@@ -51,6 +51,7 @@ class ObjectPermissionsBackend:
         "qna.answer": "writer",
         "qna.comment": "writer",
         "agora.post": "writer",
+        "media.directory": "uploader",
     }
 
     def authenticate(self, *args, **kwargs):
