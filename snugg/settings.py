@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "snugg.apps.univ",
     "snugg.apps.qna",
     "snugg.apps.agora",
+    "snugg.apps.media",
     "mptt",
     "storages",
     "django_extensions",
