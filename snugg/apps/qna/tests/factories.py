@@ -1,5 +1,4 @@
 import factory
-from django.contrib.contenttypes.models import ContentType
 from factory.django import DjangoModelFactory
 from faker import Faker
 
@@ -8,16 +7,6 @@ from snugg.apps.user.tests import UserFactory
 from ..models import Answer, Comment, Field, Post
 
 fake = Faker()
-
-
-class CommentFactory(DjangoModelFactory):
-    class Meta:
-        model = Comment
-
-    object_id = 1
-    content_type = ContentType.objects.get_for_model(Answer)
-    writer = factory.SubFactory(UserFactory)
-    content = factory.Faker("text")
 
 
 class FieldFactory(DjangoModelFactory):
@@ -55,3 +44,12 @@ class AnswerFactory(DjangoModelFactory):
     post = factory.SubFactory(PostFactory)
     writer = factory.SubFactory(UserFactory)
     content = factory.Faker("text")
+
+
+class CommentFactory(DjangoModelFactory):
+    class Meta:
+        model = Comment
+
+    writer = factory.SubFactory(UserFactory)
+    content = factory.Faker("text")
+    content_object = factory.SubFactory(PostFactory)

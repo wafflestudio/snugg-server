@@ -106,7 +106,6 @@ class CommentReadTests(CommentAPITestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = UserFactory()
-        cls.answer = AnswerFactory(writer=cls.user)
         cls.comments = CommentFactory.create_batch(25)
 
     def setUp(self):
@@ -120,6 +119,7 @@ class CommentReadTests(CommentAPITestCase):
         self.assertEqual(response.data.get("content"), comment.content)
 
     def test_comment_retrieve_not_found(self):
+
         response = self.retrieve_comment(999)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
