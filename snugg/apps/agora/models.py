@@ -29,10 +29,12 @@ class Lecture(models.Model):
         )
 
 
-class Post(models.Model):
-    lecture = models.ForeignKey(Lecture, related_name="posts", on_delete=models.CASCADE)
+class Story(models.Model):
+    lecture = models.ForeignKey(
+        Lecture, related_name="storys", on_delete=models.CASCADE
+    )
     writer = models.ForeignKey(
-        User, related_name="agora_posts", on_delete=models.CASCADE
+        User, related_name="agora_storys", on_delete=models.CASCADE
     )
     title = models.CharField(max_length=150)
     content = models.TextField()
