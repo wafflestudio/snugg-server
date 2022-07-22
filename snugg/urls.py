@@ -36,6 +36,7 @@ urlpatterns = [
     path("", include("snugg.apps.user.urls")),
     path("", include("snugg.apps.qna.urls")),
     path("", include("snugg.apps.agora.urls")),
+    path("", include("snugg.apps.media.urls")),
 ]
 
 if settings.DEBUG:

@@ -1,9 +1,11 @@
 import logging
 
 import boto3
+from botocore.config import Config
 from botocore.exceptions import ClientError
+from django.conf import settings
 
-from snugg.settings import AWS_STORAGE_BUCKET_NAME, MEDIA_ROOT
+s3_config = Config(region_name=settings.AWS_REGION, signature_version="s3v4")
 
 
 def create_presigned_url(
@@ -21,13 +23,13 @@ def create_presigned_url(
     """
 
     # Generate a presigned URL for the S3 client method
-    s3_client = boto3.client("s3")
+    s3_client = boto3.client("s3", s3_config)
     try:
         response = s3_client.generate_presigned_url(
             ClientMethod=client_method_name,
             Params=method_parameters
             if "Bucket" in method_parameters
-            else {"Bucket": AWS_STORAGE_BUCKET_NAME, **method_parameters},
+            else {"Bucket": settings.AWS_STORAGE_BUCKET_NAME, **method_parameters},
             ExpiresIn=expiration,
             HttpMethod=http_method,
         )
@@ -42,7 +44,7 @@ def create_presigned_url(
 def create_presigned_get(key, expiration=3600):
     return create_presigned_url(
         "get_object",
-        method_parameters={"Bucket": AWS_STORAGE_BUCKET_NAME, "Key": key},
+        method_parameters={"Bucket": settings.AWS_STORAGE_BUCKET_NAME, "Key": key},
         expiration=expiration,
     )
 
@@ -61,10 +63,10 @@ def create_presigned_post(key, fields=None, conditions=None, expiration=3600):
     """
 
     # Generate a presigned S3 POST URL
-    s3_client = boto3.client("s3")
+    s3_client = boto3.client("s3", config=s3_config)
     try:
         response = s3_client.generate_presigned_post(
-            AWS_STORAGE_BUCKET_NAME,
+            settings.AWS_STORAGE_BUCKET_NAME,
             key,
             Fields=fields,
             Conditions=conditions,
@@ -85,7 +87,7 @@ def create_presigned_post(key, fields=None, conditions=None, expiration=3600):
 #     if not conditions:
 #         conditions = [["starts-with", "$key", folder_name]]
 #     try:
-#         response = s3_client.generate_presigned_post(AWS_STORAGE_BUCKET_NAME,
+#         response = s3_client.generate_presigned_post(settings.AWS_STORAGE_BUCKET_NAME,
 #                                                      folder_name+'${filename}',
 #                                                      Fields=fields,
 #                                                      Conditions=conditions,
@@ -106,7 +108,9 @@ def delete_object(key=None, prefix=None):
 
         if isinstance(key, str):
             try:
-                response = s3.delete_object(Bucket=AWS_STORAGE_BUCKET_NAME, Key=key)
+                response = s3.delete_object(
+                    Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=key
+                )
             except ClientError as e:
                 logging.error(e)
                 return None
@@ -114,7 +118,7 @@ def delete_object(key=None, prefix=None):
         elif isinstance(key, (list, tuple)):
             try:
                 response = s3.delete_objects(
-                    Bucket=AWS_STORAGE_BUCKET_NAME,
+                    Bucket=settings.AWS_STORAGE_BUCKET_NAME,
                     Delete={"Objects": [{"Key": o} for o in key]},
                 )
             except ClientError as e:
@@ -128,7 +132,7 @@ def delete_object(key=None, prefix=None):
             raise ValueError('prefix should end with "/"')
 
         s3 = boto3.resource("s3")
-        bucket = s3.Bucket(AWS_STORAGE_BUCKET_NAME)
+        bucket = s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
         response = bucket.objects.filter(Prefix=prefix).delete()
 
     return response
