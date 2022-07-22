@@ -3,9 +3,9 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.pagination import CursorPagination, PageNumberPagination
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-from .models import Lecture, Post
-from .schemas import lecture_viewset_schema, post_viewset_schema
-from .serializers import LectureSerializer, PostSerializer
+from .models import Lecture, Story
+from .schemas import lecture_viewset_schema, story_viewset_schema
+from .serializers import LectureSerializer, StorySerializer
 
 
 class LectureFilter(filters.FilterSet):
@@ -41,17 +41,17 @@ class LectureViewSet(ReadOnlyModelViewSet):
     pagination_class = LecturePagination
 
 
-class PostPagination(CursorPagination):
+class StoryPagination(CursorPagination):
     page_size = 10
     page_size_query_param = "page_size"
 
 
-@post_viewset_schema
-class PostViewSet(ModelViewSet):
-    queryset = Post.objects.select_related(
+@story_viewset_schema
+class StoryViewSet(ModelViewSet):
+    queryset = Story.objects.select_related(
         "lecture", "writer", "lecture__university", "lecture__college", "lecture__major"
     ).prefetch_related("lecture__semesters")
-    serializer_class = PostSerializer
+    serializer_class = StorySerializer
     filter_backends = (
         OrderingFilter,
         SearchFilter,
@@ -70,4 +70,4 @@ class PostViewSet(ModelViewSet):
         "title",
         "content",
     )
-    pagination_class = PostPagination
+    pagination_class = StoryPagination
