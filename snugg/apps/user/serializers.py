@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
@@ -80,6 +80,10 @@ class RefreshService(SignoutService, TokenRefreshSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    birth_date = serializers.DateField(
+        format="%Y-%m-%d", input_formats=["%Y-%m-%d", "iso-8601"], required=False
+    )
+
     class Meta:
         model = User
         fields = (
@@ -96,28 +100,33 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_email(self, value):
         if User.objects.filter(email=value).exclude(pk=self.instance.pk).exists():
             raise serializers.ValidationError("이미 사용중인 이메일입니다.")
+        self.context["email"] = value
         return value
 
     def validate_username(self, value):
         if User.objects.filter(username=value).exclude(pk=self.instance.pk).exists():
             raise serializers.ValidationError("이미 사용중인 아이디입니다.")
+        self.context["username"] = value
         return value
 
     def validate_birth_date(self, value):
         if value > datetime.now().date():
             raise serializers.ValidationError("생년월일을 확인해주세요.")
+        self.context["birth_date"] = value
         return value
 
     def validate_self_introduction(self, value):
         if len(value) > 100:
             raise serializers.ValidationError("자기소개는 100자 이내로 작성해주세요.")
+        self.context["self_introduction"] = value
         return value
 
-    def update(self, user, validated_data):
-        user.email = validated_data.get("email", user.email)
-        user.username = validated_data.get("username", user.username)
-        user.birth_date = validated_data.get("birth_date", user.birth_date)
-        user.self_introduction = validated_data.get(
+    def update(self):
+        user = self.context["request"].user
+        user.email = self.context.get("email", user.email)
+        user.username = self.context.get("username", user.username)
+        user.birth_date = self.context.get("birth_date", user.birth_date)
+        user.self_introduction = self.context.get(
             "self_introduction", user.self_introduction
         )
         user.save()

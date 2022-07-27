@@ -95,5 +95,5 @@ class AuthViewSet(GenericViewSet):
         elif request.method == "PUT":
             serializer = self.get_serializer(request.user, data=request.data)
             serializer.is_valid(raise_exception=True)
-            serializer.execute()
-            return Response({"notice": "프로필이 정상적으로 변경되었습니다."})
+            serializer.update()
+            return Response(serializer.data)
