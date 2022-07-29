@@ -96,6 +96,10 @@ class UserSerializer(serializers.ModelSerializer):
             "last_login",
         )
         read_only_fields = ("created_at", "last_login")
+        extra_kwargs={
+            'email': {'required': False},
+            'username': {'required': False}
+        }
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exclude(pk=self.instance.pk).exists():
